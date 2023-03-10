@@ -11,7 +11,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.gson.gson
 
-class GEClient(private val token: String, geServer: String) {
+class GEClient(private val token: String, geServer: String, private val clientConf: ClientConf = ClientConf()) {
     val client = createHttpClient()
     val url = "$geServer/api/builds"
 
@@ -23,10 +23,10 @@ class GEClient(private val token: String, geServer: String) {
             gson()
         }
         install(HttpRequestRetry) {
-            retryOnServerErrors(maxRetries = 300)
+            retryOnServerErrors(maxRetries = clientConf.maxRetries)
             exponentialDelay(
-                base = 1.0,
-                maxDelayMs = 5000
+                base = clientConf.exponentialBase,
+                maxDelayMs = clientConf.exponentialMaxDelay
             )
         }
         install(Auth) {
@@ -42,3 +42,9 @@ class GEClient(private val token: String, geServer: String) {
         return client.get(url).body() as T
     }
 }
+
+data class ClientConf(
+    val maxRetries: Int = 200,
+    val exponentialBase: Double = 2.0,
+    val exponentialMaxDelay: Long = 60000
+)

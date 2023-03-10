@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.cdsap"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     mavenCentral()
@@ -104,10 +104,13 @@ publishing {
     }
 }
 
-afterEvaluate {
-    configure<SigningExtension> {
-        (extensions.getByName("publishing") as PublishingExtension).publications.forEach {
-            sign(it)
+if (extra.has("signing.keyId")) {
+    afterEvaluate {
+        configure<SigningExtension> {
+            (extensions.getByName("publishing") as
+                PublishingExtension).publications.forEach {
+                sign(it)
+            }
         }
     }
 }

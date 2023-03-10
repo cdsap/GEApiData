@@ -19,7 +19,8 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
         val duration = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS)
         val progressBar = ProgressBar()
         println("Calculating Build Scans to retrieve")
-        progressBar.update(0, if (filter.maxBuilds < 1000) 1000 else 1000 / 1000)
+        val buildToProcess = (if (filter.maxBuilds < 1000) 1000 else filter.maxBuilds)/1000
+        progressBar.update(0, buildToProcess)
         var i = 0
 
         val buildScans = mutableListOf<Scan>()
@@ -29,7 +30,7 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
             } else {
                 repository.getBuildScans(filter, buildScans.last().id)
             }
-            progressBar.update(i++, filter.maxBuilds / 1000)
+            progressBar.update(i++, buildToProcess)
             if (buildScans.size + scans.size > filter.maxBuilds) {
                 val diff = filter.maxBuilds - buildScans.size
                 buildScans.addAll(scans.dropLast(1000 - diff))
@@ -67,7 +68,7 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
                 scans.addAll(runningTasks.awaitAll())
             }
             println(
-                "Getting Build cache performance:" + (System.currentTimeMillis()
+                "Getting Build attributes in: " + (System.currentTimeMillis()
                     .toDuration(DurationUnit.MILLISECONDS) - duration)
             )
             println("Filtering Build Scans")

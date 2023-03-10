@@ -18,12 +18,12 @@ class GetCachePerformanceImpl(private val repository: GradleEnterpriseRepository
     override suspend fun get(builds: List<ScanWithAttributes>, filter: Filter): List<Build> {
         val cachePerformanceBuild = mutableListOf<Build>()
         if (builds.isNotEmpty()) {
-            println("Processing build scan cache performance for ${builds.size}")
+            println("Processing build scan cache performance for ${builds.size} builds")
             val progressBar = ProgressBar()
             val duration = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS)
             progressBar.update(0, builds.size)
             var i = 0
-            val semaphore = Semaphore(filter.concurrentCalls)
+            val semaphore = Semaphore(filter.concurrentCallsConservative)
             coroutineScope {
                 val runningTasks = builds.map {
                     async {
@@ -47,11 +47,9 @@ class GetCachePerformanceImpl(private val repository: GradleEnterpriseRepository
                 cachePerformanceBuild.addAll(runningTasks.awaitAll())
             }
             println(
-                "Getting build attributes:" + (System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS) - duration)
+                "Getting cache performance builds in: " + (System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS) - duration)
             )
-
         }
-
         return cachePerformanceBuild
     }
 }
