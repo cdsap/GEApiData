@@ -39,6 +39,7 @@ class GetCachePerformanceImpl(private val repository: GradleEnterpriseRepository
                         cachePerformance.tags = it.tags
                         cachePerformance.projectName = it.projectName
                         cachePerformance.requestedTask = it.requestedTasksGoals
+                        cachePerformance.values = it.values
                         progressBar.update(i++, builds.size)
                         semaphore.release()
                         cachePerformance

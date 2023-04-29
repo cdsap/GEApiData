@@ -19,6 +19,7 @@ data class Build(
     var projectName: String = "",
     val goalExecution: Array<Goal>,
     val goalFingerprintingSummary: TaskFingerprintingSummary,
+    var values: Array<CustomValue> = emptyArray()
 )
 
 enum class Experiment {

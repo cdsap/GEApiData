@@ -19,7 +19,7 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
         val duration = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS)
         val progressBar = ProgressBar()
         println("Calculating Build Scans to retrieve")
-        val buildToProcess = (if (filter.maxBuilds < 1000) 1000 else filter.maxBuilds)/1000
+        val buildToProcess = (if (filter.maxBuilds < 1000) 1000 else filter.maxBuilds) / 1000
         progressBar.update(0, buildToProcess)
         var i = 0
 
@@ -94,7 +94,8 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
                 hasFailed = gradleScan.hasFailed,
                 environment = gradleScan.environment,
                 buildDuration = gradleScan.buildDuration,
-                buildStartTime = gradleScan.buildStartTime
+                buildStartTime = gradleScan.buildStartTime,
+                values = gradleScan.values
             )
         } else {
             ScanWithAttributes(
@@ -106,7 +107,8 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
                 hasFailed = mavenScan.hasFailed,
                 environment = mavenScan.environment,
                 buildDuration = mavenScan.buildDuration,
-                buildStartTime = mavenScan.buildStartTime
+                buildStartTime = mavenScan.buildStartTime,
+                values = mavenScan.values
             )
         }
 

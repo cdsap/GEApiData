@@ -9,7 +9,8 @@ data class ScanWithAttributes(
     val environment: Environment,
     val buildDuration: Long,
     val buildTool: String,
-    val buildStartTime: Long
+    val buildStartTime: Long,
+    val values: Array<CustomValue>
 )
 
 data class ScanWithAttributesGradle(
@@ -20,7 +21,8 @@ data class ScanWithAttributesGradle(
     val hasFailed: Boolean,
     val environment: Environment,
     val buildDuration: Long,
-    val buildStartTime: Long
+    val buildStartTime: Long,
+    val values: Array<CustomValue>
 )
 
 data class ScanWithAttributesMaven(
@@ -31,5 +33,6 @@ data class ScanWithAttributesMaven(
     val hasFailed: Boolean,
     val environment: Environment,
     val buildDuration: Long,
-    val buildStartTime: Long
+    val buildStartTime: Long,
+    val values: Array<CustomValue>
 )
