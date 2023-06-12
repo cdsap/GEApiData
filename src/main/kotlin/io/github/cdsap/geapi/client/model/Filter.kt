@@ -15,7 +15,7 @@ data class Filter(
     val user: String? = null,
     val experimentId: String? = null,
     val buildSystem: String = "gradle",
-    val concurrentCalls: Int,
+    val concurrentCalls: Int = 10,
     val concurrentCallsConservative: Int,
     val variants: String? = null,
     val maxDuration: Long = 0L

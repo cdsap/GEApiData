@@ -46,25 +46,25 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
             val progressBar = ProgressBar()
             progressBar.update(0, buildScans.size)
             var i = 0
-
             coroutineScope {
-                val runningTasks = buildScans.map { sc ->
-                    async {
-                        semaphore.acquire()
-                        var gradleScan: ScanWithAttributesGradle? = null
-                        var mavenScan: ScanWithAttributesMaven? = null
+                val runningTasks =
+                    buildScans.filter { it.buildToolType == "gradle" || it.buildToolType == "maven" }.map { sc ->
+                        async {
+                            semaphore.acquire()
+                            var gradleScan: ScanWithAttributesGradle? = null
+                            var mavenScan: ScanWithAttributesMaven? = null
 
-                        if (sc.buildToolType == "gradle") {
-                            gradleScan = repository.getBuildScanGradleAttribute(sc.id)
-                        } else {
-                            mavenScan = repository.getBuildScanMavenAttribute(sc.id)
+                            if (sc.buildToolType == "gradle") {
+                                gradleScan = repository.getBuildScanGradleAttribute(sc.id)
+                            } else {
+                                mavenScan = repository.getBuildScanMavenAttribute(sc.id)
+                            }
+                            val scan: ScanWithAttributes = scanWithAttributes(gradleScan, mavenScan)
+                            progressBar.update(i++, buildScans.size)
+                            semaphore.release()
+                            scan
                         }
-                        val scan: ScanWithAttributes = scanWithAttributes(gradleScan, mavenScan)
-                        progressBar.update(i++, buildScans.size)
-                        semaphore.release()
-                        scan
                     }
-                }
                 scans.addAll(runningTasks.awaitAll())
             }
             println(

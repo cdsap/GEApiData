@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.cdsap"
-version = "0.1.4"
+version = "0.1.5"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
     implementation("io.ktor:ktor-serialization-gson:2.0.3")
     testImplementation(kotlin("test"))
+
 }
 
 tasks.test {
