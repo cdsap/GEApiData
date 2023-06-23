@@ -18,5 +18,6 @@ data class Filter(
     val concurrentCalls: Int = 10,
     val concurrentCallsConservative: Int,
     val variants: String? = null,
-    val maxDuration: Long = 0L
+    val maxDuration: Long = 0L,
+    val exclusiveTags: Boolean = false
 )
