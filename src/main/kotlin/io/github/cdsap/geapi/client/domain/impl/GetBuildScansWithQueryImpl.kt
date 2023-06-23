@@ -26,7 +26,11 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
         val buildScans = mutableListOf<Scan>()
         while (buildScans.size < filter.maxBuilds) {
             val scans = if (buildScans.size == 0) {
-                repository.getBuildScans(filter)
+                if (filter.sinceBuildId != null) {
+                    repository.getBuildScans(filter, filter.sinceBuildId)
+                } else {
+                    repository.getBuildScans(filter)
+                }
             } else {
                 repository.getBuildScans(filter, buildScans.last().id)
             }
@@ -72,9 +76,10 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
                     .toDuration(DurationUnit.MILLISECONDS) - duration)
             )
             println("Filtering Build Scans")
-            return scans.filter {
+            val filteredScans = scans.filter {
                 filterBuildScans(it, filter)
             }
+            return filteredScans
         } else {
             return emptyList()
         }
@@ -119,7 +124,7 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
         val filterProcessBuildScansFailed = if (filter.includeFailedBuilds) true else !scanWithAttributes.hasFailed
         val filterProject =
             if (filter.project == null) true else filter.project == scanWithAttributes.projectName
-        val filterTags = tagIsIncluded(filter.tags, scanWithAttributes.tags.toList())
+        val filterTags = tagIsIncluded(filter.tags, scanWithAttributes.tags.toList(), filter.exclusiveTags)
         val filterTasks = if (filter.requestedTask == null) true else requestedTasksIncludeTask(
             scanWithAttributes.requestedTasksGoals,
             filter.requestedTask!!
@@ -128,13 +133,25 @@ class GetBuildScansWithQueryImpl(private val repository: GradleEnterpriseReposit
         return filterProcessBuildScansFailed && filterProject && filterTags && filterTasks && filterUser
     }
 
-    private fun tagIsIncluded(filterTags: List<String>, buildTags: List<String>): Boolean {
+    private fun tagIsIncluded(filterTags: List<String>, buildTags: List<String>, exclusiveTags: Boolean): Boolean {
         if (filterTags.isEmpty()) {
             return true
         }
-        buildTags.forEach {
-            if (filterTags.map { it.uppercase() }.contains(it.uppercase())) {
-                return true
+        if (exclusiveTags) {
+            val count = filterTags.size
+            var aux = 0
+            buildTags.forEach {
+                if (filterTags.map { it.uppercase() }.contains(it.uppercase())) {
+                    aux++
+                }
+            }
+            return count == aux
+
+        } else {
+            buildTags.forEach {
+                if (filterTags.map { it.uppercase() }.contains(it.uppercase())) {
+                    return true
+                }
             }
         }
         return false
