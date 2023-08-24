@@ -5,4 +5,3 @@ data class AvoidanceSavingsSummary(
     val ratio: String,
     val remoteCache: String
 )
-

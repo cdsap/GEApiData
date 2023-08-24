@@ -1,17 +1,21 @@
 package io.github.cdsap.geapi.client.domain.impl
 
-import io.github.cdsap.geapi.client.model.*
+import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.Environment
+import io.github.cdsap.geapi.client.model.Filter
+import io.github.cdsap.geapi.client.model.GradleScan
+import io.github.cdsap.geapi.client.model.MavenScan
+import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-
 class GetBuildScansWithQueryImplTest {
 
     @Test
     fun givenGradleBuildsAllTheBuildScansAreReturned() = runBlocking {
-        val getBuildScansWithQuery = GetBuildScansWithQueryImpl(FakeGradleEnterpriseRepository(listOf("gradle")))
+        val getBuildScansWithQuery = GetBuildsWithAttributesRequest(FakeGradleEnterpriseRepository(listOf("gradle")))
 
         val filter = Filter(
             maxBuilds = 100,
@@ -20,22 +24,18 @@ class GetBuildScansWithQueryImplTest {
             project = "nowinandroid",
             tags = listOf("tag1", "tag2"),
             requestedTask = null,
-            user = null,
-            concurrentCallsConservative = 1,
-            initFilter = 0L,
-            url = ""
+            user = null
         )
 
         val result = getBuildScansWithQuery.get(filter)
 
         assertEquals(100, result.size)
-
     }
 
     @Test
     fun givenGradleAndMavenBuildsAllTheBuildScansAreReturned() = runBlocking {
         val getBuildScansWithQuery =
-            GetBuildScansWithQueryImpl(FakeGradleEnterpriseRepository(listOf("gradle", "maven")))
+            GetBuildsWithAttributesRequest(FakeGradleEnterpriseRepository(listOf("gradle", "maven")))
 
         val filter = Filter(
             maxBuilds = 100,
@@ -44,22 +44,18 @@ class GetBuildScansWithQueryImplTest {
             project = "nowinandroid",
             tags = listOf("tag1", "tag2"),
             requestedTask = null,
-            user = null,
-            concurrentCallsConservative = 1,
-            initFilter = 0L,
-            url = ""
+            user = null
         )
 
         val result = getBuildScansWithQuery.get(filter)
 
         assertEquals(100, result.size)
-
     }
 
     @Test
     fun givenGradleBazelAndMavenBazelBuildsAreNotReturned() = runBlocking {
         val getBuildScansWithQuery =
-            GetBuildScansWithQueryImpl(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
+            GetBuildsWithAttributesRequest(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
 
         val filter = Filter(
             maxBuilds = 100,
@@ -68,22 +64,18 @@ class GetBuildScansWithQueryImplTest {
             project = "nowinandroid",
             tags = listOf("tag1", "tag2"),
             requestedTask = null,
-            user = null,
-            concurrentCallsConservative = 1,
-            initFilter = 0L,
-            url = ""
+            user = null
         )
 
         val result = getBuildScansWithQuery.get(filter)
 
         assertEquals(90, result.size)
-
     }
 
     @Test
     fun testFilteringProjectNotIncludedInBuildScansReturnsEmptyResults() = runBlocking {
         val getBuildScansWithQuery =
-            GetBuildScansWithQueryImpl(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
+            GetBuildsWithAttributesRequest(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
 
         val filter = Filter(
             maxBuilds = 100,
@@ -93,21 +85,18 @@ class GetBuildScansWithQueryImplTest {
             tags = listOf("tag1", "tag2"),
             requestedTask = null,
             user = null,
-            concurrentCallsConservative = 1,
-            initFilter = 0L,
-            url = ""
+            concurrentCallsConservative = 1
         )
 
         val result = getBuildScansWithQuery.get(filter)
 
         assert(result.isEmpty())
-
     }
 
     @Test
     fun testFilteringTagsNotIncludedInBuildScansReturnsEmptyResults() = runBlocking {
         val getBuildScansWithQuery =
-            GetBuildScansWithQueryImpl(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
+            GetBuildsWithAttributesRequest(FakeGradleEnterpriseRepository(listOf("gradle", "maven", "bazel")))
 
         val filter = Filter(
             maxBuilds = 100,
@@ -116,23 +105,18 @@ class GetBuildScansWithQueryImplTest {
             project = "nowinandroid",
             tags = listOf("myNewTag"),
             requestedTask = null,
-            user = null,
-            concurrentCallsConservative = 1,
-            initFilter = 0L,
-            url = ""
+            user = null
         )
 
         val result = getBuildScansWithQuery.get(filter)
 
         assert(result.isEmpty())
-
     }
 }
 
 internal class FakeGradleEnterpriseRepository(private val buildSystems: List<String>) : GradleEnterpriseRepository {
 
     override suspend fun getBuildScans(filter: Filter, buildId: String?): Array<Scan> {
-
         val scans = mutableListOf<Scan>()
         if (buildSystems.contains("bazel")) {
             for (i in 1..10) {
@@ -141,7 +125,6 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
             for (i in 1..filter.maxBuilds - 10) {
                 scans.add(Scan(id = i.toString(), buildToolType = "gradle"))
             }
-
         } else if (buildSystems.contains("maven")) {
             for (i in 1..filter.maxBuilds / 2) {
                 scans.add(Scan(id = i.toString(), buildToolType = "maven"))
@@ -158,9 +141,9 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
         return scans.toTypedArray()
     }
 
-    override suspend fun getBuildScanGradleAttribute(scanId: String): ScanWithAttributesGradle {
-        return ScanWithAttributesGradle(
-            id = scanId,
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        return GradleScan(
+            id = id,
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
@@ -172,9 +155,9 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
         )
     }
 
-    override suspend fun getBuildScanMavenAttribute(scanId: String): ScanWithAttributesMaven {
-        return ScanWithAttributesMaven(
-            id = scanId,
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
+        return MavenScan(
+            id = id,
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
@@ -199,7 +182,6 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
     GradleEnterpriseRepository {
 
     override suspend fun getBuildScans(filter: Filter, buildId: String?): Array<Scan> {
-
         val scans = mutableListOf<Scan>()
         for (i in 1..filter.maxBuilds) {
             scans.add(Scan(id = i.toString(), buildToolType = "gradle"))
@@ -208,9 +190,9 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
         return scans.toTypedArray()
     }
 
-    override suspend fun getBuildScanGradleAttribute(scanId: String): ScanWithAttributesGradle {
-        return ScanWithAttributesGradle(
-            id = scanId,
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        return GradleScan(
+            id = id,
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
@@ -222,9 +204,9 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
         )
     }
 
-    override suspend fun getBuildScanMavenAttribute(scanId: String): ScanWithAttributesMaven {
-        return ScanWithAttributesMaven(
-            id = scanId,
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
+        return MavenScan(
+            id = id,
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,

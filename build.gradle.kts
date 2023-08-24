@@ -5,10 +5,11 @@ plugins {
     application
     `maven-publish`
     `signing`
+    id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
 }
 
 group = "io.github.cdsap"
-version = "0.1.6"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -21,7 +22,6 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.0.3")
     implementation("io.ktor:ktor-serialization-gson:2.0.3")
     testImplementation(kotlin("test"))
-
 }
 
 tasks.test {
@@ -108,10 +108,13 @@ publishing {
 if (extra.has("signing.keyId")) {
     afterEvaluate {
         configure<SigningExtension> {
-            (extensions.getByName("publishing") as
-                PublishingExtension).publications.forEach {
+            (
+                extensions.getByName("publishing") as
+                    PublishingExtension
+                ).publications.forEach {
                 sign(it)
             }
         }
     }
 }
+

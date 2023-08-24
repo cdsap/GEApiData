@@ -1,9 +1,12 @@
 package io.github.cdsap.geapi.client.repository.impl
 
-import io.github.cdsap.geapi.client.model.*
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
-import io.github.cdsap.geapi.domain.model.*
+import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.Filter
+import io.github.cdsap.geapi.client.model.GradleScan
+import io.github.cdsap.geapi.client.model.MavenScan
+import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.network.GEClient
+import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 
 class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepository {
 
@@ -21,11 +24,11 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true")
     }
 
-    override suspend fun getBuildScanGradleAttribute(id: String): ScanWithAttributesGradle {
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
         return client.get("${client.url}/$id/gradle-attributes")
     }
 
-    override suspend fun getBuildScanMavenAttribute(id: String): ScanWithAttributesMaven {
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
         return client.get("${client.url}/$id/maven-attributes")
     }
 
