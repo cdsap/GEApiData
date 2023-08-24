@@ -1,14 +1,13 @@
 package io.github.cdsap.geapi.client.model
 
-data class ScanWithAttributes(
+data class MavenScan(
     val id: String,
-    val projectName: String,
-    val requestedTasksGoals: Array<String>,
+    val topLevelProjectName: String,
+    val requestedGoals: Array<String>,
     val tags: Array<String>,
     val hasFailed: Boolean,
     val environment: Environment,
     val buildDuration: Long,
-    val buildTool: String,
     val buildStartTime: Long,
     val values: Array<CustomValue>
 )

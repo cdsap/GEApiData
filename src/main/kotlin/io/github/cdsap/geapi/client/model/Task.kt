@@ -1,6 +1,4 @@
-package io.github.cdsap.geapi.domain.model
-
-import kotlin.time.Duration
+package io.github.cdsap.geapi.client.model
 
 data class Task(
     val taskType: String,
@@ -9,17 +7,3 @@ data class Task(
     val duration: Long,
     val fingerprintingDuration: Long
 )
-
-
-data class Goal(
-    val goalName: String,
-    val mojoType: String,
-    val goalExecutionId: String,
-    val goalProjectName: String,
-    val avoidanceOutcome: String,
-    val duration: Long,
-    val nonCacheabilityCategory: String,
-    val nonCacheabilityReason: String,
-    val fingerprintingDuration: Long
-)
-

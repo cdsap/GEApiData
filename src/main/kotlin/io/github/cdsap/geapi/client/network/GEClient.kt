@@ -3,7 +3,7 @@ package io.github.cdsap.geapi.client.network
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.*
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -13,7 +13,7 @@ import io.ktor.serialization.gson.gson
 
 class GEClient(private val token: String, geServer: String, private val clientConf: ClientConf = ClientConf()) {
     val client = createHttpClient()
-    val url = "$geServer/api/builds"
+    val url = if (geServer.last().toString() == "/") "${geServer.dropLast(1)}/api/builds" else "${geServer}/api/builds"
 
     private fun createHttpClient() = HttpClient(CIO) {
         engine {

@@ -1,4 +1,4 @@
-package io.github.cdsap.geapi.progressbar
+package io.github.cdsap.geapi.client.progressbar
 
 class ProgressBar {
     private var progress: StringBuilder? = null
@@ -8,16 +8,18 @@ class ProgressBar {
     }
 
     fun update(done: Int, total: Int) {
-        var done = done
+        var counter = done
         val workchars = charArrayOf('|', '/', '-', '\\')
         val format = "\r%3d%% %s %c"
-        val percent = ++done * 100 / total
+        val percent = ++counter * 100 / total
         var extrachars = percent / 2 - progress!!.length
         while (extrachars-- > 0) {
             progress!!.append('#')
         }
         System.out.printf(
-            format, percent, progress,
+            format,
+            percent,
+            progress,
             workchars[done % workchars.size]
         )
         if (done == total) {
