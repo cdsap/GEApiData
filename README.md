@@ -69,6 +69,7 @@ Returns a list of `Build`:
 | goalExecution           | List of goals             |
 | values                  | Custom values             |
 
+Both Request functions are `suspend`.
 
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
