@@ -27,8 +27,8 @@ class FilterBuildScanAdvancedSearch {
 
         var filterRequestedTasks = ""
         if (filter.requestedTask != null) {
-            val escapeColons = filter.requestedTask.toString().replace(":","\\:")
-            filterRequestedTasks = "requested:${escapeColons}"
+            val escapeColons = filter.requestedTask.toString().replace(":", "\\:")
+            filterRequestedTasks = "requested:$escapeColons"
         }
 
         var filterUser = ""

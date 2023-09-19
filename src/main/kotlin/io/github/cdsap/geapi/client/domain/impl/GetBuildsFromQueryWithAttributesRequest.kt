@@ -58,7 +58,7 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
                 continueCalls = false
                 progressFeedback.explicitUpdate(filter.maxBuilds)
             } else {
-                if(buildScans.size == previousBuildScansSize) {
+                if (buildScans.size == previousBuildScansSize) {
                     continueCalls = false
                     progressFeedback.explicitUpdate(filter.maxBuilds)
                 }

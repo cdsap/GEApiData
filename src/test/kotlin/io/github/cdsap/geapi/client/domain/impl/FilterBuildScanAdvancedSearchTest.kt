@@ -62,7 +62,6 @@ class FilterBuildScanAdvancedSearchTest {
         assertEquals(expectedQueryString, queryString)
     }
 
-
     @Test
     fun testFilterWithOnlyProject() {
         val filter = Filter(project = "myProject")
