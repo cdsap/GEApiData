@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.cdsap"
-version = "0.2.0"
+version = "0.2.1"
 
 repositories {
     mavenCentral()
@@ -117,4 +117,3 @@ if (extra.has("signing.keyId")) {
         }
     }
 }
-

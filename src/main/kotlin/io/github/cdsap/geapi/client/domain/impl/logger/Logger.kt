@@ -1,4 +1,4 @@
-package io.github.cdsap.geapi.client.domain.impl
+package io.github.cdsap.geapi.client.domain.impl.logger
 
 import io.github.cdsap.geapi.client.model.ClientType
 

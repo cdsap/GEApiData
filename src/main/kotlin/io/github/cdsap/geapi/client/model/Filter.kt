@@ -4,7 +4,7 @@ data class Filter(
     var maxBuilds: Int = 50,
     var sinceBuildId: String? = null,
     val project: String? = null,
-    val includeFailedBuilds: Boolean = false,
+    val includeFailedBuilds: Boolean = true,
     var requestedTask: String? = null,
     var tags: List<String> = emptyList(),
     val user: String? = null,

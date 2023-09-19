@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
+import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScan
 import io.github.cdsap.geapi.client.model.ClientType
 import io.github.cdsap.geapi.client.model.Environment
 import io.github.cdsap.geapi.client.model.Filter

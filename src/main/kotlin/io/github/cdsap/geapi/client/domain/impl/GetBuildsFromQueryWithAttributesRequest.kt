@@ -1,7 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.domain.GetBuildsWithAttributes
-import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScan
 import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
@@ -11,15 +10,13 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GetBuildsWithAttributesRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithAttributes {
+class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithAttributes {
 
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
         val buildScans = aggregateBuildScansToRetrieve(filter, logger)
         return if (buildScans.isNotEmpty()) {
-            val filterBuildScan = FilterBuildScan()
-            logger.log("Filtering Build Scans")
-            return GetScanAttribute(repository).getScanAttributes(buildScans, filter, logger).filter { filterBuildScan.filter(it, filter) }
+            return GetScanAttribute(repository).getScanAttributes(buildScans, filter, logger)
         } else {
             emptyList()
         }
@@ -30,28 +27,36 @@ class GetBuildsWithAttributesRequest(private val repository: GradleEnterpriseRep
         logger: Logger
     ): List<Scan> {
         logger.log("Calculating Build Scans to retrieve")
-        val buildToProcess = (if (filter.maxBuilds < 1000) 1000 else filter.maxBuilds) / 1000
+        val buildToProcess = filter.maxBuilds
         val progressFeedback = ProgressFeedback(filter.clientType, buildToProcess)
         val buildScans = mutableListOf<Scan>()
 
         progressFeedback.init()
 
-        while (buildScans.size < filter.maxBuilds) {
+        var continueCalls = true
+
+        while (buildScans.size < filter.maxBuilds && continueCalls) {
             val scans = if (buildScans.size == 0) {
                 if (filter.sinceBuildId != null) {
-                    repository.getBuildScans(filter, filter.sinceBuildId)
+                    repository.getBuildScansWithAdvancedQuery(filter, filter.sinceBuildId)
                 } else {
-                    repository.getBuildScans(filter)
+                    repository.getBuildScansWithAdvancedQuery(filter)
                 }
             } else {
-                repository.getBuildScans(filter, buildScans.last().id)
+                repository.getBuildScansWithAdvancedQuery(filter, buildScans.last().id)
             }
-            progressFeedback.update()
+
             if (buildScans.size + scans.size > filter.maxBuilds) {
                 val diff = filter.maxBuilds - buildScans.size
                 buildScans.addAll(scans.dropLast(1000 - diff))
             } else {
                 buildScans.addAll(scans)
+            }
+            if (buildScans.size < filter.maxBuilds && filter.maxBuilds <= 1000) {
+                continueCalls = false
+                progressFeedback.explicitUpdate(filter.maxBuilds)
+            } else {
+                progressFeedback.explicitUpdate(buildScans.size - 1)
             }
         }
         logBuildScanInformation(buildScans, logger)

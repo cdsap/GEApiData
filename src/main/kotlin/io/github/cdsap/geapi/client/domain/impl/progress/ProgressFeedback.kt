@@ -1,4 +1,4 @@
-package io.github.cdsap.geapi.client.domain.impl
+package io.github.cdsap.geapi.client.domain.impl.progress
 
 import io.github.cdsap.geapi.client.model.ClientType
 import io.github.cdsap.geapi.client.progressbar.ProgressBar
@@ -27,6 +27,12 @@ class ProgressFeedback(
     fun update() {
         if (clientType == ClientType.CLI) {
             progressBar?.update(i++, size)
+        }
+    }
+
+    fun explicitUpdate(newSize: Int) {
+        if (clientType == ClientType.CLI) {
+            progressBar?.update(newSize, size)
         }
     }
 }
