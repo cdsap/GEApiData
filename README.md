@@ -2,6 +2,7 @@
 Intermediate layer for Gradle Enterprise API:
 * Paginates `/api/builds` allowing to request more than 1000 builds
 * Consolidate attributes and cache performance endpoints
+* Supports advanced query language requests for GE 2023.3
 
 > This is not an official Gradle Enterprise library.
 > This is a free interpretation of a layer that allows massive requests and consolidates builds information to be
@@ -10,7 +11,7 @@ Intermediate layer for Gradle Enterprise API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.0")
+  implementation("io.github.cdsap:geapi-data:0.2.1")
 }
 ```
 
@@ -28,6 +29,14 @@ getBuildScans.forEach {
     ...
 }
 ```
+If you are using Gradle Enterprise 2023.3 you can use the variant:
+```kotlin
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get()
+getBuildScans.forEach {
+    ...
+}
+```
+
 Returns a list of `ScanWithAttributes`:
 
 | Property            | Description              |
@@ -92,6 +101,14 @@ in parameters like `project`,`tags` or `requestedTask`.
 | clientType                  | Type of client, API or CLI                                                    | ClientType.API |
 
 ## Real Examples
+
+### Last 5000 `ScanAttributes` filtering by project
+Requires GE 2023.3
+```
+val repository = GradleRepositoryRequest(GEClient(apiKey, url))
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(Filter(maxBuilds = 5000)
+```
+
 
 ### Last 5000 `ScanAttributes`
 ```
@@ -161,14 +178,14 @@ Getting 50000 Build Scans Attributes
 https://github.com/cdsap/ProjectReport
 
 CLI providing reports by user/task/project in a Gradle Enterprise instance
-Only uses `GetBuildsWithAttributesRequest`
+Using `GetBuildsWithAttributesRequest` and `GetBuildsFromQueryWithAttributesRequest`
 
 ### TaskReport
 https://github.com/cdsap/TaskReport
 
 This CLI provides general reports for duration/fingerprinting by type and path. Additionally, it offers single reports for
 specific tasks.
-Uses `GetBuildsWithAttributesRequest` and `GetBuildsWithCachePerformanceRequest`
+Uses `GetBuildsWithAttributesRequest`, `GetBuildsFromQueryWithAttributesRequest` and `GetBuildsWithCachePerformanceRequest`
 
 ### CompareGEBuilds (WIP)
 https://github.com/cdsap/CompareGEBuilds
