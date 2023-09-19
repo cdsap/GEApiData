@@ -13,7 +13,7 @@ import io.ktor.serialization.gson.gson
 
 class GEClient(private val token: String, geServer: String, private val clientConf: ClientConf = ClientConf()) {
     val client = createHttpClient()
-    val url = if (geServer.last().toString() == "/") "${geServer.dropLast(1)}/api/builds" else "${geServer}/api/builds"
+    val url = if (geServer.last().toString() == "/") "${geServer.dropLast(1)}/api/builds" else "$geServer/api/builds"
 
     private fun createHttpClient() = HttpClient(CIO) {
         engine {

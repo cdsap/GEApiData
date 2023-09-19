@@ -10,6 +10,8 @@ interface GradleEnterpriseRepository {
 
     suspend fun getBuildScans(filter: Filter, buildId: String? = null): Array<Scan>
 
+    suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String? = null): Array<Scan>
+
     suspend fun getBuildScanGradleAttribute(id: String): GradleScan
     suspend fun getBuildScanMavenAttribute(id: String): MavenScan
 

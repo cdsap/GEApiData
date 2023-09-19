@@ -1,4 +1,4 @@
-package io.github.cdsap.geapi.client.domain.impl
+package io.github.cdsap.geapi.client.domain.impl.parser
 
 class TagParser {
     fun tagIsIncluded(filterTags: List<String>, buildTags: List<String>, exclusiveTags: Boolean): Boolean {

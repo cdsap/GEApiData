@@ -110,6 +110,10 @@ internal class FakeCacheGradleEnterpriseRepository() :
         TODO("Not yet implemented")
     }
 
+    override suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String?): Array<Scan> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
         TODO("Not yet implemented")
     }

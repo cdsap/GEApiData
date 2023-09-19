@@ -1,12 +1,14 @@
-package io.github.cdsap.geapi.client.domain.impl
+package io.github.cdsap.geapi.client.domain.impl.filter
 
+import io.github.cdsap.geapi.client.domain.impl.parser.TagParser
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 
 class FilterBuildScan {
 
     fun filter(scanWithAttributes: ScanWithAttributes, filter: Filter): Boolean {
-        val filterProcessBuildScansFailed = if (filter.includeFailedBuilds) true else !scanWithAttributes.hasFailed
+        val filterProcessBuildScansFailed =
+            if (filter.includeFailedBuilds != null) if (filter.includeFailedBuilds) true else !scanWithAttributes.hasFailed else true
         val filterProject =
             if (filter.project == null) true else filter.project == scanWithAttributes.projectName
         val filterTags = TagParser().tagIsIncluded(filter.tags, scanWithAttributes.tags.toList(), filter.exclusiveTags)

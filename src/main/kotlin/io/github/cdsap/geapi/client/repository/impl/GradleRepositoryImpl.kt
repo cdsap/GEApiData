@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.repository.impl
 
+import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScanAdvancedSearch
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
@@ -38,5 +39,21 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
 
     override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
         return client.get("${client.url}/$id/maven-build-cache-performance")
+    }
+
+    override suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String?): Array<Scan> {
+        val filtering = if (buildId != null) {
+            "fromBuild=$buildId"
+        } else {
+            ""
+        }
+        val maxBuilds = if (filter.maxBuilds < 1000) {
+            filter.maxBuilds
+        } else {
+            1000
+        }
+        val query = FilterBuildScanAdvancedSearch().filter(filter)
+
+        return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true&query=$query")
     }
 }

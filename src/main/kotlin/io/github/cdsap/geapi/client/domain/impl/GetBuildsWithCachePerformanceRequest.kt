@@ -1,6 +1,8 @@
 package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.domain.GetBuildsWithCachePerformance
+import io.github.cdsap.geapi.client.domain.impl.logger.Logger
+import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
