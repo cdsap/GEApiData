@@ -34,6 +34,7 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
         progressFeedback.init()
 
         var continueCalls = true
+        var previousBuildScansSize = 0
 
         while (buildScans.size < filter.maxBuilds && continueCalls) {
             val scans = if (buildScans.size == 0) {
@@ -52,12 +53,18 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
             } else {
                 buildScans.addAll(scans)
             }
+
             if (buildScans.size < filter.maxBuilds && filter.maxBuilds <= 1000) {
                 continueCalls = false
                 progressFeedback.explicitUpdate(filter.maxBuilds)
             } else {
+                if (buildScans.size == previousBuildScansSize) {
+                    continueCalls = false
+                    progressFeedback.explicitUpdate(filter.maxBuilds)
+                }
                 progressFeedback.explicitUpdate(buildScans.size - 1)
             }
+            previousBuildScansSize = buildScans.size
         }
         logBuildScanInformation(buildScans, logger)
         return buildScans
