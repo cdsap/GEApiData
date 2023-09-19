@@ -43,6 +43,27 @@ class FilterBuildScanAdvancedSearchTest {
     }
 
     @Test
+    fun testEscapeTasksWithColons() {
+        val filter = Filter(
+            project = "myProject",
+            includeFailedBuilds = false,
+            tags = listOf("tag1", "tag2", "tag3"),
+            exclusiveTags = true,
+            requestedTask = ":app:compile",
+            user = "john_doe"
+        )
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString =
+            "project:myProject%20(tag:tag1%20AND%20tag:tag2%20AND%20tag:tag3)%20buildOutcome:succeeded%20user:john_doe%20requested:\\:app\\:compile"
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+
+    @Test
     fun testFilterWithOnlyProject() {
         val filter = Filter(project = "myProject")
 
