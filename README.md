@@ -11,7 +11,7 @@ Intermediate layer for Gradle Enterprise API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.1")
+  implementation("io.github.cdsap:geapi-data:0.2.2")
 }
 ```
 
