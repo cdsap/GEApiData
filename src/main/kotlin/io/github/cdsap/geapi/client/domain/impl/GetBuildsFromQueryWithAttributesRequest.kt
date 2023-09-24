@@ -66,15 +66,22 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
             }
             previousBuildScansSize = buildScans.size
         }
-        logBuildScanInformation(buildScans, logger)
+        if (buildScans.isEmpty()) {
+            logBuildScanInformation(buildScans, logger)
+        }
         return buildScans
     }
 
     private fun logBuildScanInformation(buildScans: List<Scan>, logger: Logger) {
-        val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
-        logger.log("")
-        logger.log("Date first Build scan processed: $dateInit")
-        val dateEnd = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.last().availableAt))
-        logger.log("Date last Build scan processed: $dateEnd")
+        if (buildScans.isNotEmpty()) {
+            val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
+            logger.log("")
+            logger.log("Date first Build scan processed: $dateInit")
+            val dateEnd = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.last().availableAt))
+            logger.log("Date last Build scan processed: $dateEnd")
+        } else {
+            logger.log("")
+            logger.log("No build scans found")
+        }
     }
 }
