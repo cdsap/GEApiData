@@ -34,6 +34,26 @@ class GetBuildsFromQueryWithAttributesTest {
     }
 
     @Test
+    fun givenEmptyBuildsResultsAreEmpty() = runBlocking {
+        val getBuildScansWithQuery =
+            GetBuildsFromQueryWithAttributesRequest(FakeEmptyRepositoryWithQuery())
+
+        val filter = Filter(
+            maxBuilds = 100,
+            concurrentCalls = 1,
+            includeFailedBuilds = false,
+            project = "nowinandroid",
+            tags = listOf("tag1", "tag2"),
+            requestedTask = null,
+            user = null
+        )
+
+        val result = getBuildScansWithQuery.get(filter)
+
+        assertEquals(0, result.size)
+    }
+
+    @Test
     fun givenGradleAndMavenBuildsAllTheBuildScansAreReturned() = runBlocking {
         val getBuildScansWithQuery =
             GetBuildsFromQueryWithAttributesRequest(FakeGradleEnterpriseRepositoryWithQuery(listOf("gradle", "maven")))
@@ -104,6 +124,53 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
         }
 
         return scans.toTypedArray()
+    }
+
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        return GradleScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio"),
+            values = emptyArray(),
+            requestedTasks = emptyArray(),
+            rootProjectName = "nowinandroid",
+            tags = arrayOf("tag1")
+        )
+    }
+
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
+        return MavenScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio"),
+            values = emptyArray(),
+            requestedGoals = emptyArray(),
+            topLevelProjectName = "nowinandroid",
+            tags = arrayOf("tag1")
+        )
+    }
+
+    override suspend fun getBuildScanGradleCachePerformance(id: String): Build {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
+        TODO("Not yet implemented")
+    }
+}
+internal class FakeEmptyRepositoryWithQuery() :
+    GradleEnterpriseRepository {
+
+    override suspend fun getBuildScans(filter: Filter, buildId: String?): Array<Scan> {
+        return emptyArray<Scan>()
+    }
+
+    override suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String?): Array<Scan> {
+        return emptyArray<Scan>()
     }
 
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {

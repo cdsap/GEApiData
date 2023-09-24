@@ -10,7 +10,8 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithAttributes {
+class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) :
+    GetBuildsWithAttributes {
 
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
@@ -67,14 +68,20 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
             previousBuildScansSize = buildScans.size
         }
         logBuildScanInformation(buildScans, logger)
+
         return buildScans
     }
 
     private fun logBuildScanInformation(buildScans: List<Scan>, logger: Logger) {
-        val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
-        logger.log("")
-        logger.log("Date first Build scan processed: $dateInit")
-        val dateEnd = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.last().availableAt))
-        logger.log("Date last Build scan processed: $dateEnd")
+        if (buildScans.isNotEmpty()) {
+            val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
+            logger.log("")
+            logger.log("Date first Build scan processed: $dateInit")
+            val dateEnd = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.last().availableAt))
+            logger.log("Date last Build scan processed: $dateEnd")
+        } else {
+            logger.log("")
+            logger.log("No build scans found")
+        }
     }
 }
