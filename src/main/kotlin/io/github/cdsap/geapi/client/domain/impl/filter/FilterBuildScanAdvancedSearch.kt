@@ -18,7 +18,7 @@ class FilterBuildScanAdvancedSearch {
         }
         var filterTagsValue = ""
         if (filter.tags.isNotEmpty()) {
-            filterTagsValue = if (filter.exclusiveTags) {
+            filterTagsValue = if (filter.exclusiveTags || filter.tags.any { it.contains("!") }) {
                 returnTagQuery(filter, "AND")
             } else {
                 returnTagQuery(filter, "OR")
@@ -66,7 +66,11 @@ class FilterBuildScanAdvancedSearch {
     private fun returnTagQuery(filter: Filter, operand: String): String {
         var tag = ""
         filter.tags.forEach {
-            tag += "tag:$it%20$operand%20"
+            if (it.contains("!")) {
+                tag += "-tag:${it.replaceFirst("!","")}%20$operand%20"
+            } else {
+                tag += "tag:$it%20$operand%20"
+            }
         }
         val last = tag.lastIndexOf("%20$operand%20")
         val filtered = tag.substring(0, last)

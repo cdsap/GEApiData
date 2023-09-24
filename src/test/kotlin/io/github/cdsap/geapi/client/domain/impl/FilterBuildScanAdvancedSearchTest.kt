@@ -85,4 +85,40 @@ class FilterBuildScanAdvancedSearchTest {
 
         assertEquals(expectedQueryString, queryString)
     }
+
+    @Test
+    fun testFilterNegativeTags() {
+        val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main"))
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "(tag:ci%20AND%20-tag:main)"
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testFilterNegativeTagsWithoutExclusiveTags() {
+        val filter = Filter(exclusiveTags = false, tags = listOf("ci", "!main"))
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "(tag:ci%20AND%20-tag:main)"
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testFilterNegativeTagsOnlyStripsFirstCharacter() {
+        val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!!main"))
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "(tag:ci%20AND%20-tag:!main)"
+
+        assertEquals(expectedQueryString, queryString)
+    }
 }
