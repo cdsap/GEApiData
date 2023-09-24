@@ -1,17 +1,17 @@
 ## ge-api-data
-Intermediate layer for Gradle Enterprise API:
+Intermediate layer for Develocity API:
 * Paginates `/api/builds` allowing to request more than 1000 builds
 * Consolidate attributes and cache performance endpoints
 * Supports advanced query language requests for GE 2023.3
 
-> This is not an official Gradle Enterprise library.
+> This is not an official Develocity library.
 > This is a free interpretation of a layer that allows massive requests and consolidates builds information to be
 > used in tooling/reports to help you understand better the state of the build in your projects
 
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.2")
+  implementation("io.github.cdsap:geapi-data:0.2.3")
 }
 ```
 
@@ -93,7 +93,7 @@ in parameters like `project`,`tags` or `requestedTask`.
 | project                     | Project name                                                                  | null           |
 | includeFailedBuilds         | Include failed builds in the request                                          | false          |
 | requestedTask               | Requested Task                                                                | null           |
-| tags                        | List of tags                                                                  | emptyList()    |
+| tags                        | List of tags, , negation tags should be marked with `!`. Example: `!main`     | emptyList()    |
 | user                        | User Build Scan                                                               | null           |
 | exclusiveTags               | List of tags must match with the available tags in the Build Scan             | false          |
 | concurrentCalls             | Concurrent calls for the Attributes request                                   | 10             |
@@ -177,7 +177,7 @@ Getting 50000 Build Scans Attributes
 ### ProjectReport
 https://github.com/cdsap/ProjectReport
 
-CLI providing reports by user/task/project in a Gradle Enterprise instance
+CLI providing reports by user/task/project in a Develocity instance
 Using `GetBuildsWithAttributesRequest` and `GetBuildsFromQueryWithAttributesRequest`
 
 ### TaskReport
