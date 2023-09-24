@@ -20,6 +20,17 @@ class TagParserTest {
     }
 
     @Test
+    fun testTagIsIncluded_matchesOneTag_shouldReturnTrue() {
+        val filterTags = listOf("tag1")
+        val buildTags = listOf("tag1", "tag2")
+        val exclusiveTags = false
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(true, result)
+    }
+
+    @Test
     fun testTagIsIncluded_withMatchingTagsAndExclusiveTags_shouldReturnTrue() {
         val filterTags = listOf("tag1", "tag2")
         val buildTags = listOf("tag1", "tag2")
@@ -64,10 +75,65 @@ class TagParserTest {
     }
 
     @Test
-    fun testTagIsIncluded_withNonMatchingTagsAndNonExclusiveTags_shouldReturnTrue() {
+    fun testTagIsIncluded_withNonMatchingTagsAndNonExclusiveTags_shouldReturnFalse() {
         val filterTags = listOf("tag1", "tag2")
         val buildTags = listOf("tag3")
         val exclusiveTags = false
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun testTagIsIncluded_whenNegationIsNotPresent_shouldReturnTrue() {
+        val filterTags = listOf("!tag1")
+        val buildTags = listOf("tag3")
+        val exclusiveTags = false
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun testTagIsIncluded_whenNegationIsPresent_shouldReturnFalse() {
+        val filterTags = listOf("!tag1")
+        val buildTags = listOf("tag1", "tag2", "tag3")
+        val exclusiveTags = false
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun testTagIsIncluded_whenNegationIsPresentAndExclusive_shouldReturnFalse() {
+        val filterTags = listOf("!tag1")
+        val buildTags = listOf("tag1", "tag2", "tag3")
+        val exclusiveTags = true
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(false, result)
+    }
+
+    @Test
+    fun testTagIsIncluded_whenExistNegationButNotInTheFirstPlace_shouldReturnTrue() {
+        val filterTags = listOf("tag!1")
+        val buildTags = listOf("tag!1", "tag2", "tag3")
+        val exclusiveTags = true
+
+        val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
+
+        assertEquals(true, result)
+    }
+
+    @Test
+    fun testTagIsIncluded_whenMoreThanOneNegativeTag_shouldReturnFalse() {
+        val filterTags = listOf("!tag1", "!tag2")
+        val buildTags = listOf("tag!1", "tag2", "tag3")
+        val exclusiveTags = true
 
         val result = tagParser.tagIsIncluded(filterTags, buildTags, exclusiveTags)
 

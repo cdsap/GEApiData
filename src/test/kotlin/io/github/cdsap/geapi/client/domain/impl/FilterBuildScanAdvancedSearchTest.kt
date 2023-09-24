@@ -121,4 +121,16 @@ class FilterBuildScanAdvancedSearchTest {
 
         assertEquals(expectedQueryString, queryString)
     }
+
+    @Test
+    fun testFilterNegativeTagsMoreThanOne() {
+        val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main", "!Dirty"))
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "(tag:ci%20AND%20-tag:main%20AND%20-tag:Dirty)"
+
+        assertEquals(expectedQueryString, queryString)
+    }
 }

@@ -18,7 +18,7 @@ class FilterBuildScanAdvancedSearch {
         }
         var filterTagsValue = ""
         if (filter.tags.isNotEmpty()) {
-            filterTagsValue = if (filter.exclusiveTags || filter.tags.any { it.contains("!") }) {
+            filterTagsValue = if (filter.exclusiveTags || filter.tags.any { it[0].toString() == "!" }) {
                 returnTagQuery(filter, "AND")
             } else {
                 returnTagQuery(filter, "OR")
