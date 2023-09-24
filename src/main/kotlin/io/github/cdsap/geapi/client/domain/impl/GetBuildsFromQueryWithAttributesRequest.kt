@@ -10,7 +10,8 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
-class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithAttributes {
+class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) :
+    GetBuildsWithAttributes {
 
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
@@ -66,9 +67,8 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
             }
             previousBuildScansSize = buildScans.size
         }
-        if (buildScans.isEmpty()) {
-            logBuildScanInformation(buildScans, logger)
-        }
+        logBuildScanInformation(buildScans, logger)
+
         return buildScans
     }
 
