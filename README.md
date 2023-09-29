@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.3")
+  implementation("io.github.cdsap:geapi-data:0.2.4")
 }
 ```
 

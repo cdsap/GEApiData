@@ -74,6 +74,7 @@ class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpr
         cachePerformance.tags = scan.tags
         cachePerformance.projectName = scan.projectName
         cachePerformance.requestedTask = scan.requestedTasksGoals
+        cachePerformance.buildDuration = scan.buildDuration
         cachePerformance.values = scan.values
     }
 }
