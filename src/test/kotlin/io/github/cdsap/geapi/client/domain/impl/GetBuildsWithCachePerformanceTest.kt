@@ -39,7 +39,7 @@ class GetCachePerformanceImplTest {
                     requestedTasksGoals = arrayOf("test"),
                     tags = arrayOf("tag3"),
                     hasFailed = true,
-                    environment = Environment(username = "user2"),
+                    environment = Environment(username = "user2", numberOfCpuCores = "3"),
                     buildDuration = 1500,
                     buildTool = "gradle",
                     buildStartTime = 1789,
@@ -82,7 +82,7 @@ class GetCachePerformanceImplTest {
                     requestedTasksGoals = arrayOf("test"),
                     tags = arrayOf("tag3"),
                     hasFailed = true,
-                    environment = Environment(username = "user2"),
+                    environment = Environment(username = "user2", numberOfCpuCores = "3"),
                     buildDuration = 1500,
                     buildTool = "maven",
                     buildStartTime = 1789,
@@ -97,8 +97,10 @@ class GetCachePerformanceImplTest {
         assertEquals(result[0].buildStartTime, 1789)
         assert(result[0].tags.contains("tag3"))
         assertEquals(result[0].projectName, "AnotherProject")
+        assertEquals(result[0].projectName, "AnotherProject")
         assert(result[0].requestedTask.contains("test"))
         assertEquals(result[0].values[0].name, "a")
+
         assertEquals(result[0].values[0].value, "b")
     }
 }

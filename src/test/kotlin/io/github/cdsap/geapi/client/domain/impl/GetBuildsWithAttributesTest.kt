@@ -10,6 +10,7 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 
 class GetBuildScansWithQueryImplTest {
 
@@ -70,6 +71,7 @@ class GetBuildScansWithQueryImplTest {
         val result = getBuildScansWithQuery.get(filter)
 
         assertEquals(90, result.size)
+        assertTrue(result[0].environment.numberOfCpuCores == "3")
     }
 
     @Test
@@ -151,7 +153,7 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedTasks = emptyArray(),
             rootProjectName = "nowinandroid",
@@ -165,7 +167,7 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedGoals = emptyArray(),
             topLevelProjectName = "nowinandroid",
@@ -204,7 +206,7 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedTasks = emptyArray(),
             rootProjectName = "nowinandroid",
@@ -218,7 +220,7 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedGoals = emptyArray(),
             topLevelProjectName = "nowinandroid",

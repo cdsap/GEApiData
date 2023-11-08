@@ -76,7 +76,15 @@ class GetBuildsFromQueryWithAttributesTest {
     @Test
     fun givenGradleBazelAndMavenBazelBuildsAreNotReturned() = runBlocking {
         val getBuildScansWithQuery =
-            GetBuildsFromQueryWithAttributesRequest(FakeGradleEnterpriseRepositoryWithQuery(listOf("gradle", "maven", "bazel")))
+            GetBuildsFromQueryWithAttributesRequest(
+                FakeGradleEnterpriseRepositoryWithQuery(
+                    listOf(
+                        "gradle",
+                        "maven",
+                        "bazel"
+                    )
+                )
+            )
 
         val filter = Filter(
             maxBuilds = 100,
@@ -132,7 +140,7 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedTasks = emptyArray(),
             rootProjectName = "nowinandroid",
@@ -146,7 +154,7 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedGoals = emptyArray(),
             topLevelProjectName = "nowinandroid",
@@ -162,6 +170,7 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
         TODO("Not yet implemented")
     }
 }
+
 internal class FakeEmptyRepositoryWithQuery() :
     GradleEnterpriseRepository {
 
@@ -179,7 +188,7 @@ internal class FakeEmptyRepositoryWithQuery() :
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedTasks = emptyArray(),
             rootProjectName = "nowinandroid",
@@ -193,7 +202,7 @@ internal class FakeEmptyRepositoryWithQuery() :
             buildStartTime = System.currentTimeMillis(),
             buildDuration = 10L,
             hasFailed = false,
-            environment = Environment("kio"),
+            environment = Environment("kio", "3"),
             values = emptyArray(),
             requestedGoals = emptyArray(),
             topLevelProjectName = "nowinandroid",
