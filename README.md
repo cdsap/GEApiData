@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.4")
+  implementation("io.github.cdsap:geapi-data:0.2.5")
 }
 ```
 
@@ -187,7 +187,7 @@ This CLI provides general reports for duration/fingerprinting by type and path. 
 specific tasks.
 Uses `GetBuildsWithAttributesRequest`, `GetBuildsFromQueryWithAttributesRequest` and `GetBuildsWithCachePerformanceRequest`
 
-### CompareGEBuilds (WIP)
+### CompareGEBuilds
 https://github.com/cdsap/CompareGEBuilds
 
 This CLI compares two different build sequences and generates reports with durations based on metrics by variant.
