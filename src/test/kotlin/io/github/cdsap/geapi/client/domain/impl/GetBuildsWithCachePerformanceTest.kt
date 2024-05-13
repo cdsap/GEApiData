@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
+import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.AvoidanceSavingsSummary
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.CustomValue
@@ -171,5 +172,9 @@ internal class FakeCacheGradleEnterpriseRepository() :
                 )
             )
         )
+    }
+
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+        TODO("Not yet implemented")
     }
 }

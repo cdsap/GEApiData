@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.repository
 
+import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
@@ -17,4 +18,5 @@ interface GradleEnterpriseRepository {
 
     suspend fun getBuildScanGradleCachePerformance(id: String): Build
     suspend fun getBuildScanMavenCachePerformance(id: String): Build
+    suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms
 }

@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
+import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Environment
 import io.github.cdsap.geapi.client.model.Filter
@@ -182,6 +183,10 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
     override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+        TODO("Not yet implemented")
+    }
 }
 
 internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: List<String>) :
@@ -233,6 +238,10 @@ internal class FakeGradleEnterpriseFilterRepository(private val buildSystems: Li
     }
 
     override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
         TODO("Not yet implemented")
     }
 }
