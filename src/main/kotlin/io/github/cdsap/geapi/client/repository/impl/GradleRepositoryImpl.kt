@@ -1,6 +1,7 @@
 package io.github.cdsap.geapi.client.repository.impl
 
 import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScanAdvancedSearch
+import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
@@ -39,6 +40,10 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
 
     override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
         return client.get("${client.url}/$id/maven-build-cache-performance")
+    }
+
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+        return client.get("${client.url}/$id/gradle-artifact-transform-executions")
     }
 
     override suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String?): Array<Scan> {
