@@ -7,6 +7,8 @@ data class ArtifactTransform(
     val outcome: String,
     val avoidanceOutcome: String,
     val duration: String,
+    val avoidanceSavings: String? = null,
     val fingerprintingDuration: String,
-    val changedAttributes: Array<ChangedAttributes>
+    val changedAttributes: Array<ChangedAttributes>,
+    var buildScanId: String? = null,
 )

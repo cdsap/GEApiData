@@ -17,6 +17,7 @@ class GetSingleBuildArtifactTransformRequest(private val repository: GradleEnter
     ): List<ArtifactTransform> {
         try {
             val artifactTransform = repository.getArtifactTransformRequest(buildId)
+            artifactTransform.artifactTransformExecutions.map { it.buildScanId = buildId }
             return artifactTransform.artifactTransformExecutions.toList()
         } catch (e: NullPointerException) {
             return emptyList()

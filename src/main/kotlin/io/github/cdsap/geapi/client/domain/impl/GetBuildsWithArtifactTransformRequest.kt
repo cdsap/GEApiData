@@ -43,7 +43,9 @@ class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterp
             val runningTasks = builds.map {
                 async {
                     semaphore.acquire()
-                    val artifactTransform = repository.getArtifactTransformRequest(it.id).artifactTransformExecutions
+                    val scanId = it.id
+                    val artifactTransform = repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
+                    artifactTransform.map { it.buildScanId = scanId }
                     progressFeedback.update()
                     semaphore.release()
                     artifactTransform

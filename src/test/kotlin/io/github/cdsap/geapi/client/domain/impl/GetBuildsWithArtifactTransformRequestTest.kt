@@ -74,6 +74,7 @@ internal class FakeRepository : GradleEnterpriseRepository {
             avoidanceOutcome = "avoided_from_cache",
             duration = "12",
             fingerprintingDuration = "12",
+            avoidanceSavings = "0",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
             )
@@ -85,6 +86,7 @@ internal class FakeRepository : GradleEnterpriseRepository {
             outcome = "from_cache",
             avoidanceOutcome = "avoided_from_cache",
             duration = "12",
+            avoidanceSavings = "0",
             fingerprintingDuration = "12",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
