@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import java.lang.NullPointerException
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -44,11 +45,18 @@ class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterp
                 async {
                     semaphore.acquire()
                     val scanId = it.id
-                    val artifactTransform = repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
-                    artifactTransform.map { it.buildScanId = scanId }
-                    progressFeedback.update()
-                    semaphore.release()
-                    artifactTransform
+                    try {
+                        val artifactTransform =
+                            repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
+                        artifactTransform.map { it.buildScanId = scanId }
+                        progressFeedback.update()
+                        semaphore.release()
+                        artifactTransform
+                    } catch (exception: NullPointerException) {
+                        progressFeedback.update()
+                        semaphore.release()
+                        emptyArray<ArtifactTransform>()
+                    }
                 }
             }
             transforms.addAll(runningTasks.awaitAll())
