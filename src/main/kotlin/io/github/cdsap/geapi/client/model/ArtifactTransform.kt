@@ -10,5 +10,5 @@ data class ArtifactTransform(
     val avoidanceSavings: String? = null,
     val fingerprintingDuration: String,
     val changedAttributes: Array<ChangedAttributes>,
-    var buildScanId: String? = null,
+    var buildScanId: String? = null
 )
