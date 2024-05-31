@@ -75,6 +75,7 @@ internal class FakeRepository : GradleEnterpriseRepository {
             duration = "12",
             fingerprintingDuration = "12",
             avoidanceSavings = "0",
+            cacheArtifactSize = "0",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
             )
@@ -88,6 +89,7 @@ internal class FakeRepository : GradleEnterpriseRepository {
             duration = "12",
             avoidanceSavings = "0",
             fingerprintingDuration = "12",
+            cacheArtifactSize = "0",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
             )
