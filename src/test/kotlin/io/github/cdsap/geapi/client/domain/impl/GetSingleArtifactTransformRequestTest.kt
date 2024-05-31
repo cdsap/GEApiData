@@ -44,6 +44,7 @@ internal class FakeArtifactRepository : GradleEnterpriseRepository {
             avoidanceOutcome = "avoided_from_cache",
             duration = "12",
             fingerprintingDuration = "12",
+            cacheArtifactSize = "0",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
             )
@@ -56,6 +57,7 @@ internal class FakeArtifactRepository : GradleEnterpriseRepository {
             avoidanceOutcome = "avoided_from_cache",
             duration = "12",
             fingerprintingDuration = "12",
+            cacheArtifactSize = "0",
             changedAttributes = arrayOf(
                 ChangedAttributes("f", "api", "om")
             )

@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.5")
+  implementation("io.github.cdsap:geapi-data:0.2.6")
 }
 ```
 
@@ -79,6 +79,34 @@ Returns a list of `Build`:
 | values                  | Custom values             |
 
 Both Request functions are `suspend`.
+
+### Retrieve Artifact Transforms
+```kotlin
+// Single Build Scan
+GetSingleBuildArtifactTransformRequest(repository).get(buildScanId)
+
+// Multiple Build Scans
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(filter)
+GetBuildsWithArtifactTransformRequest(repository).get(getBuildScans, filter)
+
+```
+Returns a list of `ArtifactTransform`:
+
+| Property                       | Description                            |
+|--------------------------------|----------------------------------------|
+| artifactTransformExecutionName | Name of the artifact transform         |
+| transformActionType            | Transform Action type                  |
+| inputArtifactName              | Input Artifact Name                    |
+| outcome                        | Outcome of the unit of work            |
+| avoidanceOutcome               | Avoidance outcome of the uint of work  |
+| duration                       | Duration of the transform execution    |
+| avoidanceSavings               | Avoidance savings in ms                |
+| fingerprintingDuration         | Fingerprinting duration in ms          |
+| changedAttributes              | Requested attributes for the transform |
+| buildScanId                    | Build Scan id                          |
+| cacheArtifactSize              | Cache output size artifact             |
+
+Note: Artifact transform endpoint is available in Develocity 2023.4+
 
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
