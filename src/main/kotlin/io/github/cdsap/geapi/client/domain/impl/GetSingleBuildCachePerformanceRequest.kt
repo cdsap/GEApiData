@@ -7,7 +7,6 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 class GetSingleBuildCachePerformanceRequest(private val repository: GradleEnterpriseRepository) :
     GetSingleBuildCachePerformance {
     override suspend fun get(buildId: String): Build {
-        val build = repository.getBuildScanGradleCachePerformance(buildId)
-        return build
+        return repository.getBuildScanGradleCachePerformance(buildId)
     }
 }
