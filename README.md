@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.6")
+  implementation("io.github.cdsap:geapi-data:0.2.7")
 }
 ```
 
@@ -108,6 +108,17 @@ Returns a list of `ArtifactTransform`:
 
 Note: Artifact transform endpoint is available in Develocity 2023.4+
 
+## Available Requests
+| Request                                 | Return type                    |
+|-----------------------------------------|--------------------------------|
+| GetBuildsFromQueryWithAttributesRequest | List&lt;ScanWithAttributes&gt; |
+| GetBuildsWithArtifactTransformRequest   | List&lt;ArtifactTransform&gt;  |
+| GetBuildsWithAttributesRequest          | List&lt;ScanWithAttributes&gt; |
+| GetBuildsWithCachePerformanceRequest    | List&lt;Build&gt;              |
+| GetScanAttribute                        | List&lt;ScanWithAttributes&gt; |
+| GetSingleBuildArtifactTransformRequest  | List&lt;ArtifactTransform&gt;  |
+| GetSingleBuildCachePerformanceRequest   | Build                          |
+| GetSingleBuildScanAttributesRequest     | ScanWithAttributes             |
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
 and required for `GetBuildsWithCachePerformanceRequest`.
@@ -185,6 +196,8 @@ for retries and exponential backoff configuration depending on the scenario/serv
 | maxRetries                  | 200     |
 | exponentialBase             | 2.0     |
 | exponentialMaxDelay         | 60000   |
+
+
 
 ## Client Types
 We define two different client types:
