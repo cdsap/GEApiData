@@ -67,9 +67,9 @@ class FilterBuildScanAdvancedSearch {
         var tag = ""
         filter.tags.forEach {
             if (it.contains("!")) {
-                tag += "-tag:${it.replaceFirst("!","")}%20$operand%20"
+                tag += "-tag:\"${it.replaceFirst("!","")}\"%20$operand%20"
             } else {
-                tag += "tag:$it%20$operand%20"
+                tag += "tag:\"$it\"%20$operand%20"
             }
         }
         val last = tag.lastIndexOf("%20$operand%20")
