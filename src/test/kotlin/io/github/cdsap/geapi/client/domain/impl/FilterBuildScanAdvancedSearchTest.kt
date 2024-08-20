@@ -6,58 +6,62 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class FilterBuildScanAdvancedSearchTest {
-
     @Test
     fun testFilterWithOnlyTags() {
-        val filter = Filter(
-            tags = listOf("tag1", "tag2", "tag3"),
-            exclusiveTags = false
-        )
+        val filter =
+            Filter(
+                tags = listOf("tag1", "tag2", "tag3"),
+                exclusiveTags = false,
+            )
 
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
-        val expectedQueryString = "(tag:tag1%20OR%20tag:tag2%20OR%20tag:tag3)"
+        val expectedQueryString = "(tag:\"tag1\"%20OR%20tag:\"tag2\"%20OR%20tag:\"tag3\")"
 
         assertEquals(expectedQueryString, queryString)
     }
 
     @Test
     fun testFilterWithAllFilterOptions() {
-        val filter = Filter(
-            project = "myProject",
-            includeFailedBuilds = false,
-            tags = listOf("tag1", "tag2", "tag3"),
-            exclusiveTags = true,
-            requestedTask = "task123",
-            user = "john_doe"
-        )
+        val filter =
+            Filter(
+                project = "myProject",
+                includeFailedBuilds = false,
+                tags = listOf("tag1", "tag2", "tag3"),
+                exclusiveTags = true,
+                requestedTask = "task123",
+                user = "john_doe",
+            )
 
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
-            "project:myProject%20(tag:tag1%20AND%20tag:tag2%20AND%20tag:tag3)%20buildOutcome:succeeded%20user:john_doe%20requested:task123"
+            "project:myProject%20(tag:\"tag1\"%20AND%20tag:\"tag2\"%20AND%20tag:\"tag3\")" +
+                "%20buildOutcome:succeeded%20user:john_doe%20requested:task123"
 
         assertEquals(expectedQueryString, queryString)
     }
 
     @Test
     fun testEscapeTasksWithColons() {
-        val filter = Filter(
-            project = "myProject",
-            includeFailedBuilds = false,
-            tags = listOf("tag1", "tag2", "tag3"),
-            exclusiveTags = true,
-            requestedTask = ":app:compile",
-            user = "john_doe"
-        )
+        val filter =
+            Filter(
+                project = "myProject",
+                includeFailedBuilds = false,
+                tags = listOf("tag1", "tag2", "tag3"),
+                exclusiveTags = true,
+                requestedTask = ":app:compile",
+                user = "john_doe",
+            )
 
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
-            "project:myProject%20(tag:tag1%20AND%20tag:tag2%20AND%20tag:tag3)%20buildOutcome:succeeded%20user:john_doe%20requested:\\:app\\:compile"
+            "project:myProject%20(tag:\"tag1\"%20AND%20tag:\"tag2\"%20AND%20tag:\"tag3\")" +
+                "%20buildOutcome:succeeded%20user:john_doe%20requested:\\:app\\:compile"
 
         assertEquals(expectedQueryString, queryString)
     }
@@ -93,7 +97,7 @@ class FilterBuildScanAdvancedSearchTest {
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
-        val expectedQueryString = "(tag:ci%20AND%20-tag:main)"
+        val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
 
         assertEquals(expectedQueryString, queryString)
     }
@@ -105,7 +109,7 @@ class FilterBuildScanAdvancedSearchTest {
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
-        val expectedQueryString = "(tag:ci%20AND%20-tag:main)"
+        val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
 
         assertEquals(expectedQueryString, queryString)
     }
@@ -117,7 +121,7 @@ class FilterBuildScanAdvancedSearchTest {
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
-        val expectedQueryString = "(tag:ci%20AND%20-tag:!main)"
+        val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"!main\")"
 
         assertEquals(expectedQueryString, queryString)
     }
@@ -129,7 +133,7 @@ class FilterBuildScanAdvancedSearchTest {
         val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
-        val expectedQueryString = "(tag:ci%20AND%20-tag:main%20AND%20-tag:Dirty)"
+        val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\"%20AND%20-tag:\"Dirty\")"
 
         assertEquals(expectedQueryString, queryString)
     }

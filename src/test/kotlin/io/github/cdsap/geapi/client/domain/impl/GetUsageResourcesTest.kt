@@ -1,148 +1,127 @@
 package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.model.*
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class GetCachePerformanceImplTest {
+class GetUsageResourcesTest {
     @Test
-    fun givenGradleBuildsAllTheBuildScansAreReturnedAndAttributesAreAggregated() = runBlocking {
-        val getCachePerformance = GetBuildsWithCachePerformanceRequest(FakeCacheGradleEnterpriseRepository())
+    fun givenGradleBuildItReturnsProcessUsage() =
+        runBlocking {
+            val resourceUsage = GetBuildsResourceUsageRequest(FakeUsageRepository(false))
 
-        val filter = Filter(
-            maxBuilds = 100,
-            concurrentCalls = 1,
-            includeFailedBuilds = false,
-            project = "nowinandroid",
-            tags = listOf("tag1", "tag2"),
-            requestedTask = null,
-            user = null
-        )
-
-        val result = getCachePerformance.get(
-            listOf(
-                ScanWithAttributes(
-                    id = "2",
-                    projectName = "AnotherProject",
-                    requestedTasksGoals = arrayOf("test"),
-                    tags = arrayOf("tag3"),
-                    hasFailed = true,
-                    environment = Environment(username = "user2", numberOfCpuCores = "3"),
-                    buildDuration = 1500,
-                    buildTool = "gradle",
-                    buildStartTime = 1789,
-                    values = arrayOf(CustomValue("a", "b"))
+            val filter =
+                Filter(
+                    maxBuilds = 100,
+                    concurrentCalls = 1,
+                    includeFailedBuilds = false,
+                    project = "nowinandroid",
+                    tags = listOf("tag3"),
+                    requestedTask = null,
+                    user = null,
                 )
-            ),
-            filter
-        )
 
-        assertEquals(1, result.size)
-        assertEquals(result[0].builtTool, "gradle")
-        assertEquals(result[0].buildStartTime, 1789)
-        assert(result[0].tags.contains("tag3"))
-        assertEquals(result[0].projectName, "AnotherProject")
-        assert(result[0].requestedTask.contains("test"))
-        assertEquals(result[0].taskExecution.size, 2)
-        assertEquals(result[0].values[0].name, "a")
-        assertEquals(result[0].values[0].value, "b")
-    }
+            val result =
+                resourceUsage.get(
+                    listOf(
+                        ScanWithAttributes(
+                            id = "2",
+                            projectName = "AnotherProject",
+                            requestedTasksGoals = arrayOf("test"),
+                            tags = arrayOf("tag3"),
+                            hasFailed = true,
+                            environment = Environment(username = "user2", numberOfCpuCores = "3"),
+                            buildDuration = 1500,
+                            buildTool = "gradle",
+                            buildStartTime = 1789,
+                            values = arrayOf(CustomValue("a", "b")),
+                        ),
+                    ),
+                    filter,
+                )
+
+            assertEquals(1, result.size)
+            assertEquals(result[0].builtTool, "gradle")
+            assert(result[0].tags.contains("tag3"))
+            assertEquals(result[0].total.allProcessesCpu.max == 100L, true)
+            assertEquals(result[0].total.allProcessesCpu.average == 50L, true)
+            assertEquals(result[0].total.allProcessesCpu.median == 51L, true)
+            assertEquals(result[0].total.allProcessesCpu.p25 == 25L, true)
+        }
 
     @Test
-    fun giveMavenBuildsAllTheBuildScansAreReturnedAndAttributesAreAggregated() = runBlocking {
-        val getCachePerformance = GetBuildsWithCachePerformanceRequest(FakeCacheGradleEnterpriseRepository())
+    fun givenMavenBuildItDoesNotReturnProcessUsage() =
+        runBlocking {
+            val resourceUsage = GetBuildsResourceUsageRequest(FakeUsageRepository(true))
 
-        val filter = Filter(
-            maxBuilds = 100,
-            concurrentCalls = 1,
-            includeFailedBuilds = false,
-            project = "nowinandroid",
-            tags = listOf("tag1", "tag2"),
-            requestedTask = null,
-            user = null
-        )
-
-        val result = getCachePerformance.get(
-            listOf(
-                ScanWithAttributes(
-                    id = "2",
-                    projectName = "AnotherProject",
-                    requestedTasksGoals = arrayOf("test"),
-                    tags = arrayOf("tag3"),
-                    hasFailed = true,
-                    environment = Environment(username = "user2", numberOfCpuCores = "3"),
-                    buildDuration = 1500,
-                    buildTool = "maven",
-                    buildStartTime = 1789,
-                    values = arrayOf(CustomValue("a", "b"))
+            val filter =
+                Filter(
+                    maxBuilds = 100,
+                    concurrentCalls = 1,
+                    includeFailedBuilds = false,
+                    project = "nowinandroid",
+                    tags = listOf("tag3"),
+                    requestedTask = null,
+                    user = null,
                 )
-            ),
-            filter
-        )
 
-        assertEquals(1, result.size)
-        assertEquals(result[0].builtTool, "maven")
-        assertEquals(result[0].buildStartTime, 1789)
-        assert(result[0].tags.contains("tag3"))
-        assertEquals(result[0].projectName, "AnotherProject")
-        assertEquals(result[0].projectName, "AnotherProject")
-        assert(result[0].requestedTask.contains("test"))
-        assertEquals(result[0].values[0].name, "a")
+            val result =
+                resourceUsage.get(
+                    listOf(
+                        ScanWithAttributes(
+                            id = "2",
+                            projectName = "AnotherProject",
+                            requestedTasksGoals = arrayOf("test"),
+                            tags = arrayOf("tag3"),
+                            hasFailed = true,
+                            environment = Environment(username = "user2", numberOfCpuCores = "3"),
+                            buildDuration = 1500,
+                            buildTool = "maven",
+                            buildStartTime = 1789,
+                            values = arrayOf(CustomValue("a", "b")),
+                        ),
+                    ),
+                    filter,
+                )
 
-        assertEquals(result[0].values[0].value, "b")
-    }
+            assertEquals(0, result.size)
+        }
 }
 
-internal class FakeCacheGradleEnterpriseRepository : FakeTestRepository() {
-
-    override suspend fun getBuildScanGradleCachePerformance(id: String): Build {
-        return Build(
-            taskExecution = arrayOf(
-                Task(
-                    "type1",
-                    ":type1",
-                    "from-cache",
-                    12,
-                    12
-                ),
-                Task(
-                    "type2",
-                    ":type2",
-                    "from-cache",
-                    12,
-                    12
-                )
-            ),
-            id = "2332",
-            buildDuration = 24,
-            avoidanceSavingsSummary = AvoidanceSavingsSummary("12", "1", "1"),
-            builtTool = "gradle",
-            goalExecution = emptyArray()
+internal class FakeUsageRepository(val maven: Boolean) : FakeTestRepository() {
+    val metric =
+        Metric(
+            average = 50L,
+            median = 51L,
+            max = 100L,
+            p25 = 25L,
+            p75 = 75L,
+            p95 = 95L,
         )
-    }
 
-    override suspend fun getBuildScanMavenCachePerformance(id: String): Build {
-        return Build(
-            taskExecution = emptyArray(),
-            id = "2332",
-            buildDuration = 24,
-            avoidanceSavingsSummary = AvoidanceSavingsSummary("12", "1", "1"),
-            builtTool = "maven",
-            goalExecution = arrayOf(
-                Goal(
-                    goalName = "goalName",
-                    mojoType = "mojoType",
-                    goalExecutionId = "goalExecutionId",
-                    goalProjectName = "goalProjectName",
-                    avoidanceOutcome = "executed",
-                    nonCacheabilityCategory = "nonCacheabilityCategory",
-                    nonCacheabilityReason = "nonCacheabilityReason",
-                    fingerprintingDuration = 10,
-                    duration = 10
-                )
-            )
+    val performanceMetrics =
+        PerformanceMetrics(
+            buildProcessCpu = metric,
+            allProcessesCpu = metric,
+            allProcessesMemory = metric,
+            buildChildProcessesCpu = metric,
+            buildChildProcessesMemory = metric,
+            buildProcessMemory = metric,
+            diskReadThroughput = metric,
+            diskWriteThroughput = metric,
+            networkUploadThroughput = metric,
+            networkDownloadThroughput = metric,
+        )
+
+    override suspend fun getBuildScanGradlePerformance(id: String): PerformanceUsage {
+        return PerformanceUsage(
+            builtTool = if (maven) "maven" else "gradle",
+            environment = Environment(username = "user2", numberOfCpuCores = "3"),
+            totalMemory = 1000L,
+            total = performanceMetrics,
+            execution = performanceMetrics,
+            nonExecution = performanceMetrics,
         )
     }
 }
