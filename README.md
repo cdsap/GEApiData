@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.7")
+  implementation("io.github.cdsap:geapi-data:0.2.8")
 }
 ```
 
@@ -108,6 +108,63 @@ Returns a list of `ArtifactTransform`:
 
 Note: Artifact transform endpoint is available in Develocity 2023.4+
 
+### Retrieve Resource usage build
+```kotlin
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(filter)
+GetBuildsResourceUsageRequest(repository).get(getBuildScans, filter)
+
+```
+Returns a list of `PerformanceUsage`:
+
+| Property       | Description                                   |
+|----------------|-----------------------------------------------|
+| totalMemory    | Total memory in the machine running the build |
+| total          | Total performance metrics                     |
+| nonExecution   | Non execution performance metrics             |
+| execution      | Execution performance metrics                 |
+| builtTool      | Build Tool                                    |
+| tags           | List of tags                                  |
+| requestedTask  | Requested Tasks                               |
+| id             | Build Scan id                                 |
+| buildDuration  | Build duration                                |
+| buildStartTime | Build start time                              |
+| projectName    | Project name                                  |
+| values         | Custom values                                 |
+| enviroment     | Environment                                   |
+
+where `PerformanceMetrics` is a map with the following properties returning a `Metric`:
+
+| Property                  |
+|---------------------------|
+| allProcessesCpu           |
+| buildProcessCpu           |
+| buildChildProcessesCpu    |
+| allProcessesMemory        |
+| buildProcessMemory        |
+| buildChildProcessesMemory |
+| diskReadThroughput        |
+| diskWriteThroughput       |
+| networkUploadThroughput   |
+| networkDownloadThroughput |
+
+Metric contains
+
+| Property |
+|----------|
+| max      |
+| average  |
+| median   |
+| p25      |
+| p75      |
+| p95      |
+
+
+Notes:
+* Resource usage endpoint is available in Develocity 2024.2+.
+* Version 0.2.8 supports only gradle build resource usage
+
+
+
 ## Available Requests
 | Request                                 | Return type                    |
 |-----------------------------------------|--------------------------------|
@@ -119,6 +176,7 @@ Note: Artifact transform endpoint is available in Develocity 2023.4+
 | GetSingleBuildArtifactTransformRequest  | List&lt;ArtifactTransform&gt;  |
 | GetSingleBuildCachePerformanceRequest   | Build                          |
 | GetSingleBuildScanAttributesRequest     | ScanWithAttributes             |
+| GetBuildsResourceUsageRequest           | List&lt;PerformanceUsage&gt;   |
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
 and required for `GetBuildsWithCachePerformanceRequest`.
