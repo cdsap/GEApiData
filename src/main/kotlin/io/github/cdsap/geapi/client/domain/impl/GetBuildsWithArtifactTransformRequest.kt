@@ -17,8 +17,10 @@ import kotlin.time.toDuration
 
 class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterpriseRepository) :
     GetBuildsArtifactTransforms {
-
-    override suspend fun get(builds: List<ScanWithAttributes>, filter: Filter): List<ArtifactTransform> {
+    override suspend fun get(
+        builds: List<ScanWithAttributes>,
+        filter: Filter,
+    ): List<ArtifactTransform> {
         return if (builds.isNotEmpty()) {
             artifactTransform(builds, filter, Logger(filter.clientType))
         } else {
@@ -29,7 +31,7 @@ class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterp
     private suspend fun artifactTransform(
         builds: List<ScanWithAttributes>,
         filter: Filter,
-        logger: Logger
+        logger: Logger,
     ): List<ArtifactTransform> {
         logger.log("Processing artifact transforms for ${builds.size} builds")
 
@@ -41,31 +43,32 @@ class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterp
         progressFeedback.init()
 
         coroutineScope {
-            val runningTasks = builds.map {
-                async {
-                    semaphore.acquire()
-                    val scanId = it.id
-                    try {
-                        val artifactTransform =
-                            repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
-                        artifactTransform.map { it.buildScanId = scanId }
-                        progressFeedback.update()
-                        semaphore.release()
-                        artifactTransform
-                    } catch (exception: NullPointerException) {
-                        progressFeedback.update()
-                        semaphore.release()
-                        emptyArray<ArtifactTransform>()
+            val runningTasks =
+                builds.map {
+                    async {
+                        semaphore.acquire()
+                        val scanId = it.id
+                        try {
+                            val artifactTransform =
+                                repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
+                            artifactTransform.map { it.buildScanId = scanId }
+                            progressFeedback.update()
+                            semaphore.release()
+                            artifactTransform
+                        } catch (exception: NullPointerException) {
+                            progressFeedback.update()
+                            semaphore.release()
+                            emptyArray<ArtifactTransform>()
+                        }
                     }
                 }
-            }
             transforms.addAll(runningTasks.awaitAll())
         }
         logger.log(
             "Getting artifact transforms builds in: " + (
                 System.currentTimeMillis()
                     .toDuration(DurationUnit.MILLISECONDS) - duration
-                )
+            ),
         )
         return transforms.filter { it != null }.flatMap { it.toList() }
     }

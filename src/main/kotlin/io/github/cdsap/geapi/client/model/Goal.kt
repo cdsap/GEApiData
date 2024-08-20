@@ -9,5 +9,5 @@ data class Goal(
     val duration: Long,
     val nonCacheabilityCategory: String,
     val nonCacheabilityReason: String,
-    val fingerprintingDuration: Long
+    val fingerprintingDuration: Long,
 )

@@ -18,11 +18,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
-
     suspend fun getScanAttributes(
         buildScans: List<Scan>,
         filter: Filter,
-        logger: Logger
+        logger: Logger,
     ): List<ScanWithAttributes> {
         logger.log("Getting ${buildScans.size} Build Scans Attributes")
 
@@ -50,9 +49,10 @@ class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
         logBuildScanAttributesInformation(duration, logger)
         return scans
     }
+
     private suspend fun scanWithAttributes(
         sc: Scan,
-        scanMapper: ScanMapper
+        scanMapper: ScanMapper,
     ): ScanWithAttributes {
         var gradleScan: GradleScan? = null
         var mavenScan: MavenScan? = null
@@ -65,7 +65,10 @@ class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
         return scanMapper.scanWithAttributes(gradleScan, mavenScan)
     }
 
-    private fun logBuildScanAttributesInformation(duration: Duration, logger: Logger) {
+    private fun logBuildScanAttributesInformation(
+        duration: Duration,
+        logger: Logger,
+    ) {
         val totalDuration = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS) - duration
         logger.log("")
         logger.log("Getting Build attributes in: $totalDuration")

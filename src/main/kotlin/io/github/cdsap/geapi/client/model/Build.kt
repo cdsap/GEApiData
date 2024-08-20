@@ -11,5 +11,5 @@ data class Build(
     var buildStartTime: Long = 0L,
     var projectName: String = "",
     val goalExecution: Array<Goal>,
-    var values: Array<CustomValue> = emptyArray()
+    var values: Array<CustomValue> = emptyArray(),
 )

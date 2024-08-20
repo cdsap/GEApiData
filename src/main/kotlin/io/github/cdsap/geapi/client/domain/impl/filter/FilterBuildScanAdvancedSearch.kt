@@ -3,7 +3,6 @@ package io.github.cdsap.geapi.client.domain.impl.filter
 import io.github.cdsap.geapi.client.model.Filter
 
 class FilterBuildScanAdvancedSearch {
-
     fun filter(filter: Filter): String {
         var filterIncludedBuildValue = ""
         if (filter.includeFailedBuilds != null) {
@@ -18,11 +17,12 @@ class FilterBuildScanAdvancedSearch {
         }
         var filterTagsValue = ""
         if (filter.tags.isNotEmpty()) {
-            filterTagsValue = if (filter.exclusiveTags || filter.tags.any { it[0].toString() == "!" }) {
-                returnTagQuery(filter, "AND")
-            } else {
-                returnTagQuery(filter, "OR")
-            }
+            filterTagsValue =
+                if (filter.exclusiveTags || filter.tags.any { it[0].toString() == "!" }) {
+                    returnTagQuery(filter, "AND")
+                } else {
+                    returnTagQuery(filter, "OR")
+                }
         }
 
         var filterRequestedTasks = ""
@@ -55,7 +55,10 @@ class FilterBuildScanAdvancedSearch {
         return queryString
     }
 
-    private fun insertValue(value: String, queryString: String): String {
+    private fun insertValue(
+        value: String,
+        queryString: String,
+    ): String {
         return if (queryString.isEmpty()) {
             value
         } else {
@@ -63,7 +66,10 @@ class FilterBuildScanAdvancedSearch {
         }
     }
 
-    private fun returnTagQuery(filter: Filter, operand: String): String {
+    private fun returnTagQuery(
+        filter: Filter,
+        operand: String,
+    ): String {
         var tag = ""
         filter.tags.forEach {
             if (it.contains("!")) {

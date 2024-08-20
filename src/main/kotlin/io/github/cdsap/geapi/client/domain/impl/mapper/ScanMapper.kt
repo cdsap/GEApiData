@@ -7,7 +7,7 @@ import io.github.cdsap.geapi.client.model.ScanWithAttributes
 class ScanMapper {
     fun scanWithAttributes(
         gradleScan: GradleScan?,
-        mavenScan: MavenScan?
+        mavenScan: MavenScan?,
     ): ScanWithAttributes {
         return if (gradleScan != null) {
             ScanWithAttributes(
@@ -20,7 +20,7 @@ class ScanMapper {
                 environment = gradleScan.environment,
                 buildDuration = gradleScan.buildDuration,
                 buildStartTime = gradleScan.buildStartTime,
-                values = gradleScan.values
+                values = gradleScan.values,
             )
         } else {
             ScanWithAttributes(
@@ -33,7 +33,7 @@ class ScanMapper {
                 environment = mavenScan.environment,
                 buildDuration = mavenScan.buildDuration,
                 buildStartTime = mavenScan.buildStartTime,
-                values = mavenScan.values
+                values = mavenScan.values,
             )
         }
     }

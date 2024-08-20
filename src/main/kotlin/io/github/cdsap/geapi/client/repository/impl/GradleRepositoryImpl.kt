@@ -6,23 +6,28 @@ import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
+import io.github.cdsap.geapi.client.model.PerformanceUsage
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.network.GEClient
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 
 class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepository {
-
-    override suspend fun getBuildScans(filter: Filter, buildId: String?): Array<Scan> {
-        val filtering = if (buildId != null) {
-            "fromBuild=$buildId"
-        } else {
-            ""
-        }
-        val maxBuilds = if (filter.maxBuilds < 1000) {
-            filter.maxBuilds
-        } else {
-            1000
-        }
+    override suspend fun getBuildScans(
+        filter: Filter,
+        buildId: String?,
+    ): Array<Scan> {
+        val filtering =
+            if (buildId != null) {
+                "fromBuild=$buildId"
+            } else {
+                ""
+            }
+        val maxBuilds =
+            if (filter.maxBuilds < 1000) {
+                filter.maxBuilds
+            } else {
+                1000
+            }
         return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true")
     }
 
@@ -46,17 +51,26 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         return client.get("${client.url}/$id/gradle-artifact-transform-executions")
     }
 
-    override suspend fun getBuildScansWithAdvancedQuery(filter: Filter, buildId: String?): Array<Scan> {
-        val filtering = if (buildId != null) {
-            "fromBuild=$buildId"
-        } else {
-            ""
-        }
-        val maxBuilds = if (filter.maxBuilds < 1000) {
-            filter.maxBuilds
-        } else {
-            1000
-        }
+    override suspend fun getBuildScanGradlePerformance(id: String): PerformanceUsage {
+        return client.get("${client.url}/$id/gradle-resource-usage")
+    }
+
+    override suspend fun getBuildScansWithAdvancedQuery(
+        filter: Filter,
+        buildId: String?,
+    ): Array<Scan> {
+        val filtering =
+            if (buildId != null) {
+                "fromBuild=$buildId"
+            } else {
+                ""
+            }
+        val maxBuilds =
+            if (filter.maxBuilds < 1000) {
+                filter.maxBuilds
+            } else {
+                1000
+            }
         val query = FilterBuildScanAdvancedSearch().filter(filter)
 
         return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true&query=$query")

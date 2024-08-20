@@ -10,5 +10,5 @@ data class ScanWithAttributes(
     val buildDuration: Long,
     val buildTool: String,
     val buildStartTime: Long,
-    val values: Array<CustomValue>
+    val values: Array<CustomValue>,
 )

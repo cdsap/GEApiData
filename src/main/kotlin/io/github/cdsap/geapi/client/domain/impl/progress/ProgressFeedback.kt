@@ -5,7 +5,7 @@ import io.github.cdsap.geapi.client.progressbar.ProgressBar
 
 class ProgressFeedback(
     private val clientType: ClientType,
-    private val size: Int
+    private val size: Int,
 ) {
     private val progressBar: ProgressBar?
     private var i = 0

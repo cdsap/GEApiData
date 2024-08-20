@@ -7,7 +7,10 @@ class ProgressBar {
         init()
     }
 
-    fun update(done: Int, total: Int) {
+    fun update(
+        done: Int,
+        total: Int,
+    ) {
         var counter = done
         val workchars = charArrayOf('|', '/', '-', '\\')
         val format = "\r%3d%% %s %c"
@@ -20,7 +23,7 @@ class ProgressBar {
             format,
             percent,
             progress,
-            workchars[done % workchars.size]
+            workchars[done % workchars.size],
         )
         if (done == total) {
             System.out.flush()
@@ -28,6 +31,7 @@ class ProgressBar {
             init()
         }
     }
+
     private fun init() {
         progress = StringBuilder(60)
     }

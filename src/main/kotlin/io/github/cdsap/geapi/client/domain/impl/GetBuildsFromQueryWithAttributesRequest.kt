@@ -8,11 +8,10 @@ import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) :
     GetBuildsWithAttributes {
-
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
         val buildScans = aggregateBuildScansToRetrieve(filter, logger)
@@ -25,7 +24,7 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
 
     private suspend fun aggregateBuildScansToRetrieve(
         filter: Filter,
-        logger: Logger
+        logger: Logger,
     ): List<Scan> {
         logger.log("Calculating Build Scans to retrieve")
         val buildToProcess = filter.maxBuilds
@@ -38,15 +37,16 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
         var previousBuildScansSize = 0
 
         while (buildScans.size < filter.maxBuilds && continueCalls) {
-            val scans = if (buildScans.size == 0) {
-                if (filter.sinceBuildId != null) {
-                    repository.getBuildScansWithAdvancedQuery(filter, filter.sinceBuildId)
+            val scans =
+                if (buildScans.size == 0) {
+                    if (filter.sinceBuildId != null) {
+                        repository.getBuildScansWithAdvancedQuery(filter, filter.sinceBuildId)
+                    } else {
+                        repository.getBuildScansWithAdvancedQuery(filter)
+                    }
                 } else {
-                    repository.getBuildScansWithAdvancedQuery(filter)
+                    repository.getBuildScansWithAdvancedQuery(filter, buildScans.last().id)
                 }
-            } else {
-                repository.getBuildScansWithAdvancedQuery(filter, buildScans.last().id)
-            }
 
             if (buildScans.size + scans.size > filter.maxBuilds) {
                 val diff = filter.maxBuilds - buildScans.size
@@ -72,7 +72,10 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
         return buildScans
     }
 
-    private fun logBuildScanInformation(buildScans: List<Scan>, logger: Logger) {
+    private fun logBuildScanInformation(
+        buildScans: List<Scan>,
+        logger: Logger,
+    ) {
         if (buildScans.isNotEmpty()) {
             val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
             logger.log("")
