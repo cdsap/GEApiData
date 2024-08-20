@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class FilterBuildScanTest {
-
     private lateinit var filterBuildScan: FilterBuildScan
 
     @BeforeEach
@@ -20,28 +19,30 @@ class FilterBuildScanTest {
 
     @Test
     fun testFilter_withMatchingAttributes_shouldReturnTrue() {
-        val scanAttributes = ScanWithAttributes(
-            id = "1",
-            projectName = "MyProject",
-            requestedTasksGoals = arrayOf("clean", "build"),
-            tags = arrayOf("tag1", "tag2"),
-            hasFailed = false,
-            environment = Environment(username = "user1", numberOfCpuCores = "3"),
-            buildDuration = 1000,
-            buildTool = "gradle",
-            buildStartTime = System.currentTimeMillis(),
-            values = emptyArray()
-        )
+        val scanAttributes =
+            ScanWithAttributes(
+                id = "1",
+                projectName = "MyProject",
+                requestedTasksGoals = arrayOf("clean", "build"),
+                tags = arrayOf("tag1", "tag2"),
+                hasFailed = false,
+                environment = Environment(username = "user1", numberOfCpuCores = "3"),
+                buildDuration = 1000,
+                buildTool = "gradle",
+                buildStartTime = System.currentTimeMillis(),
+                values = emptyArray(),
+            )
 
-        val filter = Filter(
-            includeFailedBuilds = false,
-            project = "MyProject",
-            requestedTask = "build",
-            tags = listOf("tag1"),
-            user = "user1",
-            clientType = ClientType.API,
-            concurrentCallsConservative = 0
-        )
+        val filter =
+            Filter(
+                includeFailedBuilds = false,
+                project = "MyProject",
+                requestedTask = "build",
+                tags = listOf("tag1"),
+                user = "user1",
+                clientType = ClientType.API,
+                concurrentCallsConservative = 0,
+            )
 
         val result = filterBuildScan.filter(scanAttributes, filter)
 
@@ -50,28 +51,30 @@ class FilterBuildScanTest {
 
     @Test
     fun testFilter_withNonMatchingProject_shouldReturnFalse() {
-        val scanAttributes = ScanWithAttributes(
-            id = "2",
-            projectName = "AnotherProject",
-            requestedTasksGoals = arrayOf("test"),
-            tags = arrayOf("tag3"),
-            hasFailed = true,
-            environment = Environment(username = "user2", numberOfCpuCores = "3"),
-            buildDuration = 1500,
-            buildTool = "maven",
-            buildStartTime = System.currentTimeMillis(),
-            values = emptyArray()
-        )
+        val scanAttributes =
+            ScanWithAttributes(
+                id = "2",
+                projectName = "AnotherProject",
+                requestedTasksGoals = arrayOf("test"),
+                tags = arrayOf("tag3"),
+                hasFailed = true,
+                environment = Environment(username = "user2", numberOfCpuCores = "3"),
+                buildDuration = 1500,
+                buildTool = "maven",
+                buildStartTime = System.currentTimeMillis(),
+                values = emptyArray(),
+            )
 
-        val filter = Filter(
-            includeFailedBuilds = false,
-            project = "MyProject",
-            requestedTask = "build",
-            tags = listOf("tag1"),
-            user = "user1",
-            clientType = ClientType.API,
-            concurrentCallsConservative = 0
-        )
+        val filter =
+            Filter(
+                includeFailedBuilds = false,
+                project = "MyProject",
+                requestedTask = "build",
+                tags = listOf("tag1"),
+                user = "user1",
+                clientType = ClientType.API,
+                concurrentCallsConservative = 0,
+            )
 
         val result = filterBuildScan.filter(scanAttributes, filter)
 
@@ -80,28 +83,30 @@ class FilterBuildScanTest {
 
     @Test
     fun testFilter_withNotMatchingUser_shouldReturnFalse() {
-        val scanAttributes = ScanWithAttributes(
-            id = "1",
-            projectName = "MyProject",
-            requestedTasksGoals = arrayOf("clean", "build"),
-            tags = arrayOf("tag1", "tag2"),
-            hasFailed = false,
-            environment = Environment(username = "user1", numberOfCpuCores = "3"),
-            buildDuration = 1000,
-            buildTool = "gradle",
-            buildStartTime = System.currentTimeMillis(),
-            values = emptyArray()
-        )
+        val scanAttributes =
+            ScanWithAttributes(
+                id = "1",
+                projectName = "MyProject",
+                requestedTasksGoals = arrayOf("clean", "build"),
+                tags = arrayOf("tag1", "tag2"),
+                hasFailed = false,
+                environment = Environment(username = "user1", numberOfCpuCores = "3"),
+                buildDuration = 1000,
+                buildTool = "gradle",
+                buildStartTime = System.currentTimeMillis(),
+                values = emptyArray(),
+            )
 
-        val filter = Filter(
-            includeFailedBuilds = false,
-            project = "MyProject",
-            requestedTask = "build",
-            tags = listOf("tag1"),
-            user = "user2",
-            clientType = ClientType.API,
-            concurrentCallsConservative = 0
-        )
+        val filter =
+            Filter(
+                includeFailedBuilds = false,
+                project = "MyProject",
+                requestedTask = "build",
+                tags = listOf("tag1"),
+                user = "user2",
+                clientType = ClientType.API,
+                concurrentCallsConservative = 0,
+            )
 
         val result = filterBuildScan.filter(scanAttributes, filter)
 

@@ -7,14 +7,11 @@ import java.lang.NullPointerException
 
 class GetSingleBuildArtifactTransformRequest(private val repository: GradleEnterpriseRepository) :
     GetArtifactTransforms {
-
     override suspend fun get(buildId: String): List<ArtifactTransform> {
         return artifactTransform(buildId)
     }
 
-    private suspend fun artifactTransform(
-        buildId: String
-    ): List<ArtifactTransform> {
+    private suspend fun artifactTransform(buildId: String): List<ArtifactTransform> {
         try {
             val artifactTransform = repository.getArtifactTransformRequest(buildId)
             artifactTransform.artifactTransformExecutions.map { it.buildScanId = buildId }

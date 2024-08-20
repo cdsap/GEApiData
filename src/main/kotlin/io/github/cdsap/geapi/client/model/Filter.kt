@@ -11,5 +11,5 @@ data class Filter(
     val exclusiveTags: Boolean = false,
     val concurrentCalls: Int = 10,
     val concurrentCallsConservative: Int = 5,
-    val clientType: ClientType = ClientType.API
+    val clientType: ClientType = ClientType.API,
 )

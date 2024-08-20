@@ -9,5 +9,5 @@ data class GradleScan(
     val environment: Environment,
     val buildDuration: Long,
     val buildStartTime: Long,
-    val values: Array<CustomValue>
+    val values: Array<CustomValue>,
 )

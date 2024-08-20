@@ -11,5 +11,5 @@ data class ArtifactTransform(
     val fingerprintingDuration: String,
     val cacheArtifactSize: String,
     val changedAttributes: Array<ChangedAttributes>,
-    var buildScanId: String? = null
+    var buildScanId: String? = null,
 )

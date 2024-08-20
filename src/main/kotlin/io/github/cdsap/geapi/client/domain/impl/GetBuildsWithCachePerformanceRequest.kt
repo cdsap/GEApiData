@@ -15,8 +15,10 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithCachePerformance {
-
-    override suspend fun get(builds: List<ScanWithAttributes>, filter: Filter): List<Build> {
+    override suspend fun get(
+        builds: List<ScanWithAttributes>,
+        filter: Filter,
+    ): List<Build> {
         return if (builds.isNotEmpty()) {
             cachePerformanceBuilds(builds, filter, Logger(filter.clientType))
         } else {
@@ -27,7 +29,7 @@ class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpr
     private suspend fun cachePerformanceBuilds(
         builds: List<ScanWithAttributes>,
         filter: Filter,
-        logger: Logger
+        logger: Logger,
     ): List<Build> {
         logger.log("Processing build scan cache performance for ${builds.size} builds")
 
@@ -39,35 +41,37 @@ class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpr
         progressFeedback.init()
 
         coroutineScope {
-            val runningTasks = builds.map {
-                async {
-                    semaphore.acquire()
-                    val cachePerformance = if (it.buildTool == "gradle") {
-                        repository.getBuildScanGradleCachePerformance(it.id)
-                    } else {
-                        repository.getBuildScanMavenCachePerformance(it.id)
-                    }.apply {
-                        map(this, it)
+            val runningTasks =
+                builds.map {
+                    async {
+                        semaphore.acquire()
+                        val cachePerformance =
+                            if (it.buildTool == "gradle") {
+                                repository.getBuildScanGradleCachePerformance(it.id)
+                            } else {
+                                repository.getBuildScanMavenCachePerformance(it.id)
+                            }.apply {
+                                map(this, it)
+                            }
+                        progressFeedback.update()
+                        semaphore.release()
+                        cachePerformance
                     }
-                    progressFeedback.update()
-                    semaphore.release()
-                    cachePerformance
                 }
-            }
             cachePerformanceBuild.addAll(runningTasks.awaitAll())
         }
         logger.log(
             "Getting cache performance builds in: " + (
                 System.currentTimeMillis()
                     .toDuration(DurationUnit.MILLISECONDS) - duration
-                )
+            ),
         )
         return cachePerformanceBuild
     }
 
     private fun map(
         cachePerformance: Build,
-        scan: ScanWithAttributes
+        scan: ScanWithAttributes,
     ) {
         cachePerformance.builtTool = scan.buildTool
         cachePerformance.buildStartTime = scan.buildStartTime

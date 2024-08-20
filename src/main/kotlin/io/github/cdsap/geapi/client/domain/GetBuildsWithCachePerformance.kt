@@ -5,5 +5,8 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 
 interface GetBuildsWithCachePerformance {
-    suspend fun get(builds: List<ScanWithAttributes>, filter: Filter): List<Build>
+    suspend fun get(
+        builds: List<ScanWithAttributes>,
+        filter: Filter,
+    ): List<Build>
 }

@@ -1,7 +1,11 @@
 package io.github.cdsap.geapi.client.domain.impl.parser
 
 class TagParser {
-    fun tagIsIncluded(filterTags: List<String>, buildTags: List<String>, exclusiveTags: Boolean): Boolean {
+    fun tagIsIncluded(
+        filterTags: List<String>,
+        buildTags: List<String>,
+        exclusiveTags: Boolean,
+    ): Boolean {
         if (filterTags.isEmpty()) {
             return true
         }
@@ -17,7 +21,7 @@ class TagParser {
                     }
                 } else {
                     if (buildTags.map { it.uppercase() }
-                        .contains(it.uppercase())
+                            .contains(it.uppercase())
                     ) {
                         aux++
                     }

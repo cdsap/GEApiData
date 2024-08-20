@@ -8,6 +8,6 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 class GetSingleBuildScanAttributesRequest(private val repository: GradleEnterpriseRepository) :
     GetSingleBuildScanAttributes {
     override suspend fun get(buildId: String): ScanWithAttributes {
-        return ScanMapper().scanWithAttributes(repository.getBuildScanGradleAttribute(buildId),null)
+        return ScanMapper().scanWithAttributes(repository.getBuildScanGradleAttribute(buildId), null)
     }
 }

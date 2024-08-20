@@ -6,5 +6,5 @@ data class Task(
     val avoidanceOutcome: String,
     val duration: Long,
     val fingerprintingDuration: Long,
-    val cacheArtifactSize: Long? = null
+    val cacheArtifactSize: Long? = null,
 )
