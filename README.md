@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.8")
+  implementation("io.github.cdsap:geapi-data:0.2.9")
 }
 ```
 
@@ -177,6 +177,7 @@ Notes:
 | GetSingleBuildCachePerformanceRequest   | Build                          |
 | GetSingleBuildScanAttributesRequest     | ScanWithAttributes             |
 | GetBuildsResourceUsageRequest           | List&lt;PerformanceUsage&gt;   |
+| GetSingleBuildResourceUsageRequest      | PerformanceUsage               |
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
 and required for `GetBuildsWithCachePerformanceRequest`.
