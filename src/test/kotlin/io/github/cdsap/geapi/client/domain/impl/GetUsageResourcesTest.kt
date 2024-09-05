@@ -1,6 +1,12 @@
 package io.github.cdsap.geapi.client.domain.impl
 
-import io.github.cdsap.geapi.client.model.*
+import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
+import io.github.cdsap.geapi.client.model.CustomValue
+import io.github.cdsap.geapi.client.model.Environment
+import io.github.cdsap.geapi.client.model.Filter
+import io.github.cdsap.geapi.client.model.Metric
+import io.github.cdsap.geapi.client.model.PerformanceMetrics
+import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -114,8 +120,8 @@ internal class FakeUsageRepository(val maven: Boolean) : FakeTestRepository() {
             networkDownloadThroughput = metric,
         )
 
-    override suspend fun getBuildScanGradlePerformance(id: String): PerformanceUsage {
-        return PerformanceUsage(
+    override suspend fun getBuildScanGradlePerformance(id: String): BuildWithResourceUsage {
+        return BuildWithResourceUsage(
             builtTool = if (maven) "maven" else "gradle",
             environment = Environment(username = "user2", numberOfCpuCores = "3"),
             totalMemory = 1000L,

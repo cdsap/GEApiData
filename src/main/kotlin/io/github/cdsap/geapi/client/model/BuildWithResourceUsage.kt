@@ -1,6 +1,6 @@
 package io.github.cdsap.geapi.client.model
 
-data class PerformanceUsage(
+data class BuildWithResourceUsage(
     val totalMemory: Long,
     val total: PerformanceMetrics,
     val nonExecution: PerformanceMetrics,
@@ -14,4 +14,7 @@ data class PerformanceUsage(
     var projectName: String = "",
     var environment: Environment = Environment(username = "", numberOfCpuCores = ""),
     var values: Array<CustomValue> = emptyArray(),
+    var taskExecution: Array<Task> = emptyArray(),
+    var goalExecution: Array<Goal> = emptyArray(),
+    var avoidanceSavingsSummary: AvoidanceSavingsSummary? = null,
 )
