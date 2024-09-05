@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.2.9")
+  implementation("io.github.cdsap:geapi-data:0.3.0")
 }
 ```
 
@@ -114,7 +114,7 @@ val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(filt
 GetBuildsResourceUsageRequest(repository).get(getBuildScans, filter)
 
 ```
-Returns a list of `PerformanceUsage`:
+Returns a list of `BuildWithResourceUsage`:
 
 | Property       | Description                                   |
 |----------------|-----------------------------------------------|
@@ -166,18 +166,19 @@ Notes:
 
 
 ## Available Requests
-| Request                                 | Return type                    |
-|-----------------------------------------|--------------------------------|
-| GetBuildsFromQueryWithAttributesRequest | List&lt;ScanWithAttributes&gt; |
-| GetBuildsWithArtifactTransformRequest   | List&lt;ArtifactTransform&gt;  |
-| GetBuildsWithAttributesRequest          | List&lt;ScanWithAttributes&gt; |
-| GetBuildsWithCachePerformanceRequest    | List&lt;Build&gt;              |
-| GetScanAttribute                        | List&lt;ScanWithAttributes&gt; |
-| GetSingleBuildArtifactTransformRequest  | List&lt;ArtifactTransform&gt;  |
-| GetSingleBuildCachePerformanceRequest   | Build                          |
-| GetSingleBuildScanAttributesRequest     | ScanWithAttributes             |
-| GetBuildsResourceUsageRequest           | List&lt;PerformanceUsage&gt;   |
-| GetSingleBuildResourceUsageRequest      | PerformanceUsage               |
+| Request                                 | Return type                        |
+|-----------------------------------------|------------------------------------|
+| GetBuildsFromQueryWithAttributesRequest | List&lt;ScanWithAttributes&gt;     |
+| GetBuildsWithArtifactTransformRequest   | List&lt;ArtifactTransform&gt;      |
+| GetBuildsWithAttributesRequest          | List&lt;ScanWithAttributes&gt;     |
+| GetBuildsWithCachePerformanceRequest    | List&lt;Build&gt;                  |
+| GetScanAttribute                        | List&lt;ScanWithAttributes&gt;     |
+| GetSingleBuildArtifactTransformRequest  | List&lt;ArtifactTransform&gt;      |
+| GetSingleBuildCachePerformanceRequest   | Build                              |
+| GetSingleBuildScanAttributesRequest     | ScanWithAttributes                 |
+| GetBuildsResourceUsageRequest           | List&lt;BuildWithResourceUsage&gt; |
+| GetSingleBuildResourceUsageRequest      | BuildWithResourceUsage             |
+
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
 and required for `GetBuildsWithCachePerformanceRequest`.

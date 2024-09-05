@@ -61,7 +61,7 @@ class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpr
             cachePerformanceBuild.addAll(runningTasks.awaitAll())
         }
         logger.log(
-            "Getting cache performance builds in: " + (
+            "\nGetting cache performance builds in: " + (
                 System.currentTimeMillis()
                     .toDuration(DurationUnit.MILLISECONDS) - duration
             ),

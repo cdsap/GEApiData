@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.cdsap"
-version = "0.2.9"
+version = "0.3.0"
 
 repositories {
     mavenCentral()
@@ -85,7 +85,7 @@ publishing {
                 name.set("data")
                 url.set("https://github.com/cdsap/GEApiData/")
                 description.set(
-                    "GE Api Data layer providing BuildScans based on a filter"
+                    "GE Api Data layer providing BuildScans based on a filter",
                 )
                 licenses {
                     license {
@@ -111,7 +111,7 @@ if (extra.has("signing.keyId")) {
             (
                 extensions.getByName("publishing") as
                     PublishingExtension
-                ).publications.forEach {
+            ).publications.forEach {
                 sign(it)
             }
         }

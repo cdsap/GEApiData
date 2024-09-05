@@ -2,10 +2,10 @@ package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
-import io.github.cdsap.geapi.client.model.PerformanceUsage
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 
@@ -44,7 +44,7 @@ open class FakeTestRepository : GradleEnterpriseRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getBuildScanGradlePerformance(id: String): PerformanceUsage {
+    override suspend fun getBuildScanGradlePerformance(id: String): BuildWithResourceUsage {
         TODO("Not yet implemented")
     }
 }
