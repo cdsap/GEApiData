@@ -3,6 +3,7 @@ package io.github.cdsap.geapi.client.domain.impl
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
+import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
 import io.github.cdsap.geapi.client.model.Environment
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
@@ -189,6 +190,10 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
     }
 
     override suspend fun getBuildScanGradlePerformance(id: String): BuildWithResourceUsage {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult {
         TODO("Not yet implemented")
     }
 }

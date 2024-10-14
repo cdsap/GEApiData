@@ -11,7 +11,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class GetBuildsWithArtifactTransformRequestTest {
+class GetConfigurationCacheResultRequestTest {
     private val repository = FakeRepository()
     private val getBuildsWithArtifactTransformRequest = GetBuildsWithArtifactTransformRequest(repository)
 
