@@ -3,6 +3,7 @@ package io.github.cdsap.geapi.client.repository
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
+import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
@@ -30,4 +31,6 @@ interface GradleEnterpriseRepository {
     suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms
 
     suspend fun getBuildScanGradlePerformance(id: String): BuildWithResourceUsage
+
+    suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult
 }
