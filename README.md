@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.3.0")
+  implementation("io.github.cdsap:geapi-data:0.3.1")
 }
 ```
 
@@ -163,21 +163,44 @@ Notes:
 * Resource usage endpoint is available in Develocity 2024.2+.
 * Version 0.2.8 supports only gradle build resource usage
 
+### Retrieve Gradle Configuration Cache build result
+```kotlin
+// Single Build Scan
+GetSingleConfigurationCacheResultRequest(repository).get(buildScanId)
+
+// Multiple Build Scans
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(filter)
+GetConfigurationCacheResultRequest(repository).get(getBuildScans, filter)
+
+```
+Returns a list of `ConfigurationCacheResult`:
+
+| Property    | Description                        |
+|-------------|------------------------------------|
+| outcome     | configuration cache outcome        |
+| entrySize   | Size of the cache entry            |
+| store       | Store operation duration and state |
+| load        | Load operation duration and state  |
+| missReasons | List of miss reasons               |
+
 
 
 ## Available Requests
-| Request                                 | Return type                        |
-|-----------------------------------------|------------------------------------|
-| GetBuildsFromQueryWithAttributesRequest | List&lt;ScanWithAttributes&gt;     |
-| GetBuildsWithArtifactTransformRequest   | List&lt;ArtifactTransform&gt;      |
-| GetBuildsWithAttributesRequest          | List&lt;ScanWithAttributes&gt;     |
-| GetBuildsWithCachePerformanceRequest    | List&lt;Build&gt;                  |
-| GetScanAttribute                        | List&lt;ScanWithAttributes&gt;     |
-| GetSingleBuildArtifactTransformRequest  | List&lt;ArtifactTransform&gt;      |
-| GetSingleBuildCachePerformanceRequest   | Build                              |
-| GetSingleBuildScanAttributesRequest     | ScanWithAttributes                 |
-| GetBuildsResourceUsageRequest           | List&lt;BuildWithResourceUsage&gt; |
-| GetSingleBuildResourceUsageRequest      | BuildWithResourceUsage             |
+| Request                                  | Return type                          |
+|------------------------------------------|--------------------------------------|
+| GetBuildsFromQueryWithAttributesRequest  | List&lt;ScanWithAttributes&gt;       |
+| GetBuildsWithArtifactTransformRequest    | List&lt;ArtifactTransform&gt;        |
+| GetBuildsWithAttributesRequest           | List&lt;ScanWithAttributes&gt;       |
+| GetBuildsWithCachePerformanceRequest     | List&lt;Build&gt;                    |
+| GetScanAttribute                         | List&lt;ScanWithAttributes&gt;       |
+| GetSingleBuildArtifactTransformRequest   | List&lt;ArtifactTransform&gt;        |
+| GetSingleBuildCachePerformanceRequest    | Build                                |
+| GetSingleBuildScanAttributesRequest      | ScanWithAttributes                   |
+| GetBuildsResourceUsageRequest            | List&lt;BuildWithResourceUsage&gt;   |
+| GetSingleBuildResourceUsageRequest       | BuildWithResourceUsage               |
+| GetConfigurationCacheResultRequest       | List&lt;ConfigurationCacheResult&gt; |
+| GetSingleConfigurationCacheResultRequest | ConfigurationCacheResult             |
+
 
 ## Filter
 Once we have seen the simple usage, we need to introduce the `Filter` entity. It's optional for `GetBuildsWithAttributesRequest`
