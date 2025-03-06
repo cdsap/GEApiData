@@ -7,4 +7,5 @@ data class Task(
     val duration: Long,
     val fingerprintingDuration: Long,
     val cacheArtifactSize: Long? = null,
+    val cacheKey: String? = null
 )

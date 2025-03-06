@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.3.1")
+  implementation("io.github.cdsap:geapi-data:0.3.2")
 }
 ```
 
@@ -130,7 +130,7 @@ Returns a list of `BuildWithResourceUsage`:
 | buildStartTime | Build start time                              |
 | projectName    | Project name                                  |
 | values         | Custom values                                 |
-| enviroment     | Environment                                   |
+| environment    | Environment                                   |
 
 where `PerformanceMetrics` is a map with the following properties returning a `Metric`:
 
