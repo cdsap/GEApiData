@@ -6,5 +6,5 @@ data class ConfigurationCacheResultResponse(
     val store: ConfigurationCacheOperation?,
     val load: ConfigurationCacheOperation?,
     val missReasons: List<String> = emptyList(),
-    val dependencyResolutionDuration: Long? = null
+    val dependencyResolutionDuration: Long? = null,
 )

@@ -2,6 +2,7 @@ package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.BuildProfileOverview
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
 import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
 import io.github.cdsap.geapi.client.model.Filter
@@ -50,6 +51,10 @@ open class FakeTestRepository : GradleEnterpriseRepository {
     }
 
     override suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
         TODO("Not yet implemented")
     }
 }

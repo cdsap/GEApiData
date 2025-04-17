@@ -2,6 +2,7 @@ package io.github.cdsap.geapi.client.repository
 
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.BuildProfileOverview
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
 import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
 import io.github.cdsap.geapi.client.model.Filter
@@ -33,4 +34,6 @@ interface GradleEnterpriseRepository {
     suspend fun getBuildScanGradlePerformance(id: String): BuildWithResourceUsage
 
     suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult
+
+    suspend fun getBuildProfileOverview(id: String): BuildProfileOverview
 }
