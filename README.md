@@ -11,7 +11,7 @@ Intermediate layer for Develocity API:
 ## Dependency
 ```
 dependencies {
-  implementation("io.github.cdsap:geapi-data:0.3.2")
+  implementation("io.github.cdsap:geapi-data:0.3.3")
 }
 ```
 
@@ -197,7 +197,8 @@ Returns a list of `ConfigurationCacheResult`:
 | GetSingleBuildCachePerformanceRequest    | Build                                |
 | GetSingleBuildScanAttributesRequest      | ScanWithAttributes                   |
 | GetBuildsResourceUsageRequest            | List&lt;BuildWithResourceUsage&gt;   |
-| GetSingleBuildResourceUsageRequest       | BuildWithResourceUsage               |
+| GetBuildsResourceUsageRequest            | List&lt;BuildWithResourceUsage&gt;   |
+| GetBuildsProfileRequest                  | List&lt;BuildProfileOverview&gt;     |
 | GetConfigurationCacheResultRequest       | List&lt;ConfigurationCacheResult&gt; |
 | GetSingleConfigurationCacheResultRequest | ConfigurationCacheResult             |
 
