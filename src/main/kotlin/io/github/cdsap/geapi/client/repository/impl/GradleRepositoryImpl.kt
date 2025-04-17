@@ -3,6 +3,7 @@ package io.github.cdsap.geapi.client.repository.impl
 import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScanAdvancedSearch
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
+import io.github.cdsap.geapi.client.model.BuildProfileOverview
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
 import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
 import io.github.cdsap.geapi.client.model.Filter
@@ -58,6 +59,10 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
 
     override suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult {
         return client.get("${client.url}/$id/gradle-configuration-cache")
+    }
+
+    override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
+        return client.get("${client.url}/$id/gradle-build-profile-overview")
     }
 
     override suspend fun getBuildScansWithAdvancedQuery(

@@ -17,4 +17,8 @@ data class BuildWithResourceUsage(
     var taskExecution: Array<Task> = emptyArray(),
     var goalExecution: Array<Goal> = emptyArray(),
     var avoidanceSavingsSummary: AvoidanceSavingsSummary? = null,
+    var initialization: Long = 0L,
+    var configuration: Long = 0L,
+    var endOfBuild: Long = 0L,
+    var totalGarbageCollectionTime: Long = 0L,
 )
