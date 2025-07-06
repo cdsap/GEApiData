@@ -6,6 +6,7 @@ plugins {
     `maven-publish`
     `signing`
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
+    id("com.vanniktech.maven.publish") version "0.33.0"
 }
 
 group = "io.github.cdsap"
@@ -41,62 +42,32 @@ application {
     mainClass.set("MainKt")
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "Snapshots"
-            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
+    coordinates("io.github.cdsap", "geapi-data", "0.3.3")
 
-            credentials {
-                username = System.getenv("USERNAME_SNAPSHOT")
-                password = System.getenv("PASSWORD_SNAPSHOT")
+    pom {
+        scm {
+            connection.set("scm:git:git://github.com/cdsap/GEApiData/")
+            url.set("https://github.com/cdsap/GEApiData/")
+        }
+        name.set("data")
+        url.set("https://github.com/cdsap/GEApiData/")
+        description.set(
+            "DV Api Data layer providing BuildScans based on a filter",
+        )
+        licenses {
+            license {
+                name.set("The MIT License (MIT)")
+                url.set("https://opensource.org/licenses/MIT")
+                distribution.set("repo")
             }
         }
-        maven {
-            name = "Release"
-            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-
-            credentials {
-                username = System.getenv("USERNAME_SNAPSHOT")
-                password = System.getenv("PASSWORD_SNAPSHOT")
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("libPublication") {
-            from(components["java"])
-            artifactId = "geapi-data"
-            versionMapping {
-                usage("java-api") {
-                    fromResolutionOf("runtimeClasspath")
-                }
-                usage("java-runtime") {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                scm {
-                    connection.set("scm:git:git://github.com/cdsap/GEApiData/")
-                    url.set("https://github.com/cdsap/GEApiData/")
-                }
-                name.set("data")
-                url.set("https://github.com/cdsap/GEApiData/")
-                description.set(
-                    "GE Api Data layer providing BuildScans based on a filter",
-                )
-                licenses {
-                    license {
-                        name.set("The MIT License (MIT)")
-                        url.set("https://opensource.org/licenses/MIT")
-                        distribution.set("repo")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("cdsap")
-                        name.set("Inaki Villar")
-                    }
-                }
+        developers {
+            developer {
+                id.set("cdsap")
+                name.set("Inaki Villar")
             }
         }
     }
