@@ -17,11 +17,11 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-core:2.3.13")
-    implementation("io.ktor:ktor-client-cio:2.3.13")
-    implementation("io.ktor:ktor-client-auth:2.3.13")
-    implementation("io.ktor:ktor-client-content-negotiation:2.3.13")
-    implementation("io.ktor:ktor-serialization-gson:2.3.13")
+    implementation("io.ktor:ktor-client-core:3.2.3")
+    implementation("io.ktor:ktor-client-cio:3.2.3")
+    implementation("io.ktor:ktor-client-auth:3.2.3")
+    implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+    implementation("io.ktor:ktor-serialization-gson:3.2.3")
     testImplementation(kotlin("test"))
 }
 
