@@ -5,7 +5,7 @@ plugins {
     application
     `maven-publish`
     `signing`
-    id("org.jlleitschuh.gradle.ktlint") version "14.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
