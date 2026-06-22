@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
     `signing`
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
-    id("com.vanniktech.maven.publish") version "0.36.0"
+    id("com.vanniktech.maven.publish") version "0.37.0"
 }
 
 group = "io.github.cdsap"
