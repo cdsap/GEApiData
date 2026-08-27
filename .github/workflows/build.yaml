@@ -23,5 +23,11 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java-version }}
 
+      - name: Build Process Watcher
+        uses: cdsap/build-process-watcher@v0.6.2
+        with:
+          remote_monitoring: 'true'
+          export_to_bigquery: 'true'
+
       - name: Run Tests
         run: ./gradlew test
