@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class ScanMapperTest {
+class BuildCachePerformanceMapperTest {
     @Test
     fun enrichBuildWithScanMetadataCopiesScanAttributesOntoBuild() {
         val build =
@@ -35,7 +35,7 @@ class ScanMapperTest {
                 values = arrayOf(CustomValue("a", "b")),
             )
 
-        ScanMapper().enrichBuildWithScanMetadata(build, scan)
+        BuildCachePerformanceMapper().enrichBuildWithScanMetadata(build, scan)
 
         assertEquals("maven", build.builtTool)
         assertEquals(1789, build.buildStartTime)
