@@ -54,6 +54,7 @@ class GetCachePerformanceImplTest {
             assert(result[0].tags.contains("tag3"))
             assertEquals(result[0].projectName, "AnotherProject")
             assert(result[0].requestedTask.contains("test"))
+            assertEquals(result[0].buildDuration, 1500)
             assertEquals(result[0].taskExecution.size, 2)
             assertEquals(result[0].values[0].name, "a")
             assertEquals(result[0].values[0].value, "b")
@@ -101,6 +102,7 @@ class GetCachePerformanceImplTest {
             assertEquals(result[0].projectName, "AnotherProject")
             assertEquals(result[0].projectName, "AnotherProject")
             assert(result[0].requestedTask.contains("test"))
+            assertEquals(result[0].buildDuration, 1500)
             assertEquals(result[0].values[0].name, "a")
 
             assertEquals(result[0].values[0].value, "b")
