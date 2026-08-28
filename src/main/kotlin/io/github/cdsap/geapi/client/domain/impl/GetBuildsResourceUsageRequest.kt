@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -44,24 +45,24 @@ class GetBuildsResourceUsageRequest(private val repository: GradleEnterpriseRepo
             val runningTasks =
                 builds.filter { it.buildTool == "gradle" }.map {
                     async {
-                        semaphore.acquire()
-                        val scanAttributes = it
+                        semaphore.withPermit {
+                            val scanAttributes = it
 
-                        val processUsage =
-                            repository.getBuildScanGradlePerformance(scanAttributes.id)
-                        processUsage.id = scanAttributes.id
-                        processUsage.buildDuration = scanAttributes.buildDuration
-                        processUsage.buildStartTime = scanAttributes.buildStartTime
-                        processUsage.requestedTask = scanAttributes.requestedTasksGoals
-                        processUsage.builtTool = scanAttributes.buildTool
-                        processUsage.projectName = scanAttributes.projectName
-                        processUsage.tags = scanAttributes.tags
-                        processUsage.environment = scanAttributes.environment
-                        processUsage.values = scanAttributes.values
+                            val processUsage =
+                                repository.getBuildScanGradlePerformance(scanAttributes.id)
+                            processUsage.id = scanAttributes.id
+                            processUsage.buildDuration = scanAttributes.buildDuration
+                            processUsage.buildStartTime = scanAttributes.buildStartTime
+                            processUsage.requestedTask = scanAttributes.requestedTasksGoals
+                            processUsage.builtTool = scanAttributes.buildTool
+                            processUsage.projectName = scanAttributes.projectName
+                            processUsage.tags = scanAttributes.tags
+                            processUsage.environment = scanAttributes.environment
+                            processUsage.values = scanAttributes.values
 
-                        progressFeedback.update()
-                        semaphore.release()
-                        processUsage
+                            progressFeedback.update()
+                            processUsage
+                        }
                     }
                 }
             resourceUsages.addAll(runningTasks.awaitAll())

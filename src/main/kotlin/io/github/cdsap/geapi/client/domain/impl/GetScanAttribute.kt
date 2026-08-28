@@ -13,6 +13,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -37,11 +38,11 @@ class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
             val runningTasks =
                 buildScans.filter { it.buildToolType == "gradle" || it.buildToolType == "maven" }.map { sc ->
                     async {
-                        semaphore.acquire()
-                        val scan = scanWithAttributes(sc, scanMapper)
-                        progressFeedback.update()
-                        semaphore.release()
-                        scan
+                        semaphore.withPermit {
+                            val scan = scanWithAttributes(sc, scanMapper)
+                            progressFeedback.update()
+                            scan
+                        }
                     }
                 }
             scans.addAll(runningTasks.awaitAll())

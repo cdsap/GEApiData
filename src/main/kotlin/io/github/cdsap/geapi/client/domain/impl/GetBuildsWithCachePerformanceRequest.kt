@@ -12,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -46,18 +47,18 @@ class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpr
             val runningTasks =
                 builds.map {
                     async {
-                        semaphore.acquire()
-                        val cachePerformance =
-                            if (it.buildTool == "gradle") {
-                                repository.getBuildScanGradleCachePerformance(it.id)
-                            } else {
-                                repository.getBuildScanMavenCachePerformance(it.id)
-                            }.apply {
-                                buildCachePerformanceMapper.enrichBuildWithScanMetadata(this, it)
-                            }
-                        progressFeedback.update()
-                        semaphore.release()
-                        cachePerformance
+                        semaphore.withPermit {
+                            val cachePerformance =
+                                if (it.buildTool == "gradle") {
+                                    repository.getBuildScanGradleCachePerformance(it.id)
+                                } else {
+                                    repository.getBuildScanMavenCachePerformance(it.id)
+                                }.apply {
+                                    buildCachePerformanceMapper.enrichBuildWithScanMetadata(this, it)
+                                }
+                            progressFeedback.update()
+                            cachePerformance
+                        }
                     }
                 }
             cachePerformanceBuild.addAll(runningTasks.awaitAll())

@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -44,15 +45,15 @@ class GetBuildsProfileRequest(private val repository: GradleEnterpriseRepository
             val runningTasks =
                 builds.filter { it.buildTool == "gradle" }.map {
                     async {
-                        semaphore.acquire()
-                        val scanAttributes = it
+                        semaphore.withPermit {
+                            val scanAttributes = it
 
-                        val profile =
-                            repository.getBuildProfileOverview(scanAttributes.id)
-                        profile.id = scanAttributes.id
-                        progressFeedback.update()
-                        semaphore.release()
-                        profile
+                            val profile =
+                                repository.getBuildProfileOverview(scanAttributes.id)
+                            profile.id = scanAttributes.id
+                            progressFeedback.update()
+                            profile
+                        }
                     }
                 }
             buildProfile.addAll(runningTasks.awaitAll())

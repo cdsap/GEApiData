@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -44,12 +45,12 @@ class GetConfigurationCacheResultRequest(private val repository: GradleEnterpris
             val runningTasks =
                 builds.filter { it.buildTool == "gradle" }.map {
                     async {
-                        semaphore.acquire()
-                        val scanAttributes = it
-                        val configurationCacheResult = repository.getConfigurationCacheResult(scanAttributes.id)
-                        progressFeedback.update()
-                        semaphore.release()
-                        configurationCacheResult
+                        semaphore.withPermit {
+                            val scanAttributes = it
+                            val configurationCacheResult = repository.getConfigurationCacheResult(scanAttributes.id)
+                            progressFeedback.update()
+                            configurationCacheResult
+                        }
                     }
                 }
             configurationCacheResults.addAll(runningTasks.awaitAll())
