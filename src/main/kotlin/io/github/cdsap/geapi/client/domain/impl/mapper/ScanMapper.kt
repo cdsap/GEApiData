@@ -1,6 +1,5 @@
 package io.github.cdsap.geapi.client.domain.impl.mapper
 
-import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
@@ -37,18 +36,5 @@ class ScanMapper {
                 values = mavenScan.values,
             )
         }
-    }
-
-    fun enrichBuildWithScanMetadata(
-        build: Build,
-        scan: ScanWithAttributes,
-    ) {
-        build.builtTool = scan.buildTool
-        build.buildStartTime = scan.buildStartTime
-        build.tags = scan.tags
-        build.projectName = scan.projectName
-        build.requestedTask = scan.requestedTasksGoals
-        build.buildDuration = scan.buildDuration
-        build.values = scan.values
     }
 }
