@@ -3,8 +3,10 @@ package io.github.cdsap.geapi.client.domain.impl
 import io.github.cdsap.geapi.client.model.ArtifactTransform
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.ChangedAttributes
+import io.github.cdsap.geapi.client.network.GeApiHttpException
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class GetSingleArtifactTransformRequestTest {
@@ -26,6 +28,28 @@ class GetSingleArtifactTransformRequestTest {
 
             assertEquals(repository.artifactTransforms.toList(), result)
         }
+
+    @Test
+    fun `does not swallow GeApiHttpException as empty list`() {
+        val failing =
+            GetSingleBuildArtifactTransformRequest(
+                object : FakeTestRepository() {
+                    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms =
+                        throw GeApiHttpException(
+                            statusCode = 401,
+                            requestUrl = "https://ge.example/api/builds/$id/artifact-transformers",
+                            bodyPreview = "Unauthorized",
+                        )
+                },
+            )
+
+        val exception =
+            assertThrows(GeApiHttpException::class.java) {
+                runBlocking { failing.get("scan-1") }
+            }
+
+        assertEquals(401, exception.statusCode)
+    }
 }
 
 internal class FakeArtifactRepository : FakeTestRepository() {

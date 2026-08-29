@@ -23,6 +23,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.5.2")
     implementation("io.ktor:ktor-serialization-gson:3.5.2")
     testImplementation(kotlin("test"))
+    testImplementation("io.ktor:ktor-client-mock:3.5.2")
 }
 
 tasks.test {

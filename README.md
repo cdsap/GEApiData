@@ -271,6 +271,19 @@ val builds = GetBuildsWithCachePerformanceRequest(repository).get(scans, filter)
 ```
 
 
+## Error handling (behavior change)
+
+`GEClient.get` validates HTTP status and JSON shape before deserialization. Non-2xx responses and non-JSON bodies
+(HTML/plain-text error pages, auth failures, wrong server URL) throw `GeApiHttpException` with:
+
+* HTTP status code
+* Request URL (sensitive query params redacted)
+* Truncated body preview
+* Hints for common cases (`401`/`403` → check `--api-key` / token; `404` → build id / endpoint; `5xx` → retry/server)
+
+CLI authors should catch `GeApiHttpException` for actionable messages instead of low-level
+`JsonConvertException` / `Expected BEGIN_OBJECT but was STRING` failures. Successful JSON responses are unchanged.
+
 ## Network Client Configuration
 We can extend the `GEClient` configuration using `ClientConf`. This entity allows to change the default configuration
 for retries and exponential backoff configuration depending on the scenario/server load.
