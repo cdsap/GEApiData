@@ -1,6 +1,5 @@
 package io.github.cdsap.geapi.client.repository.impl
 
-import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScanAdvancedSearch
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.BuildProfileOverview
@@ -81,7 +80,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
             } else {
                 1000
             }
-        val query = FilterBuildScanAdvancedSearch().filter(filter)
+        val query = BuildScanAdvancedSearchQuery().filter(filter)
 
         return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true&query=$query")
     }

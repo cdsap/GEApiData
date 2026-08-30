@@ -1,11 +1,10 @@
-package io.github.cdsap.geapi.client.domain.impl
+package io.github.cdsap.geapi.client.repository.impl
 
-import io.github.cdsap.geapi.client.domain.impl.filter.FilterBuildScanAdvancedSearch
 import io.github.cdsap.geapi.client.model.Filter
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class FilterBuildScanAdvancedSearchTest {
+class BuildScanAdvancedSearchQueryTest {
     @Test
     fun testFilterWithOnlyTags() {
         val filter =
@@ -14,7 +13,7 @@ class FilterBuildScanAdvancedSearchTest {
                 exclusiveTags = false,
             )
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"tag1\"%20OR%20tag:\"tag2\"%20OR%20tag:\"tag3\")"
@@ -34,7 +33,7 @@ class FilterBuildScanAdvancedSearchTest {
                 user = "john_doe",
             )
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
@@ -56,7 +55,7 @@ class FilterBuildScanAdvancedSearchTest {
                 user = "john_doe",
             )
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
@@ -70,7 +69,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterWithOnlyProject() {
         val filter = Filter(project = "myProject")
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "project:myProject"
@@ -82,7 +81,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterWithOnlyIncludeFailedBuilds() {
         val filter = Filter(includeFailedBuilds = true)
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = ""
@@ -94,7 +93,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterNegativeTags() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main"))
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
@@ -106,7 +105,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterNegativeTagsWithoutExclusiveTags() {
         val filter = Filter(exclusiveTags = false, tags = listOf("ci", "!main"))
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
@@ -118,7 +117,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterNegativeTagsOnlyStripsFirstCharacter() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!!main"))
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"!main\")"
@@ -130,7 +129,7 @@ class FilterBuildScanAdvancedSearchTest {
     fun testFilterNegativeTagsMoreThanOne() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main", "!Dirty"))
 
-        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val filterBuildScan = BuildScanAdvancedSearchQuery()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\"%20AND%20-tag:\"Dirty\")"
