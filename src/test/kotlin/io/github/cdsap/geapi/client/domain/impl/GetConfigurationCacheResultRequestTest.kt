@@ -1,12 +1,11 @@
 package io.github.cdsap.geapi.client.domain.impl
 
-import io.github.cdsap.geapi.client.model.Breakdown
-import io.github.cdsap.geapi.client.model.BuildProfileOverview
+import io.github.cdsap.geapi.client.model.ConfigurationCacheOperation
+import io.github.cdsap.geapi.client.model.ConfigurationCacheResult
+import io.github.cdsap.geapi.client.model.ConfigurationCacheResultResponse
 import io.github.cdsap.geapi.client.model.CustomValue
 import io.github.cdsap.geapi.client.model.Environment
 import io.github.cdsap.geapi.client.model.Filter
-import io.github.cdsap.geapi.client.model.MemoryPool
-import io.github.cdsap.geapi.client.model.MemoryUsage
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -18,11 +17,11 @@ import java.io.File
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.seconds
 
-class GetBuildsProfileRequestTest {
+class GetConfigurationCacheResultRequestTest {
     @Test
     fun delegatesBoundedProgressExecutionToBatchProcessor() {
         val requestSource =
-            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetBuildsProfileRequest.kt")
+            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetConfigurationCacheResultRequest.kt")
                 .readText()
         val helperSource =
             File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/BuildScanBatchProcessor.kt")
@@ -39,34 +38,38 @@ class GetBuildsProfileRequestTest {
     @Test
     fun returnsEmptyListWhenNoBuildsAreProvided() =
         runBlocking {
-            val request = GetBuildsProfileRequest(SucceedingProfileRepository())
+            val request = GetConfigurationCacheResultRequest(SucceedingConfigurationCacheRepository())
 
             val result = request.get(emptyList(), Filter())
 
-            assertEquals(emptyList<BuildProfileOverview>(), result)
+            assertEquals(emptyList<ConfigurationCacheResult>(), result)
         }
 
     @Test
-    fun returnsProfilesForGradleBuildsAndFiltersOtherBuildTools() =
+    fun returnsResultsForGradleBuildsInInputOrderAfterFiltering() =
         runBlocking {
-            val request = GetBuildsProfileRequest(SucceedingProfileRepository())
+            val request = GetConfigurationCacheResultRequest(SucceedingConfigurationCacheRepository())
             val builds =
                 listOf(
                     sampleScan(id = "gradle-1", buildTool = "gradle"),
                     sampleScan(id = "maven-1", buildTool = "maven"),
                     sampleScan(id = "gradle-2", buildTool = "gradle"),
+                    sampleScan(id = "gradle-3", buildTool = "gradle"),
                 )
 
             val result = request.get(builds, Filter(concurrentCallsConservative = 1))
 
-            assertEquals(2, result.size)
-            assertEquals(listOf("gradle-1", "gradle-2"), result.map { it.id })
+            assertEquals(3, result.size)
+            assertEquals(
+                listOf("gradle-1", "gradle-2", "gradle-3"),
+                result.map { it.result.outcome },
+            )
         }
 
     @Test
     fun propagatesRepositoryFailureWithoutDependingOnHappyPathPermitRelease() =
         runBlocking {
-            val request = GetBuildsProfileRequest(FailingProfileOverviewRepository())
+            val request = GetConfigurationCacheResultRequest(FailingConfigurationCacheOverviewRepository())
             val filter = Filter(concurrentCallsConservative = 1)
 
             val thrown =
@@ -105,35 +108,26 @@ class GetBuildsProfileRequestTest {
     }
 }
 
-private fun sampleProfileOverview(): BuildProfileOverview {
-    return BuildProfileOverview(
-        breakdown =
-            Breakdown(
-                total = 100,
-                initialization = 10,
-                configuration = 20,
-                execution = 60,
-                endOfBuild = 10,
-            ),
-        memoryUsage =
-            MemoryUsage(
-                totalGarbageCollectionTime = 5,
-                memoryPools =
-                    arrayOf(
-                        MemoryPool(name = "heap", peakMemory = 1000, maxMemory = 2000),
-                    ),
+private fun sampleConfigurationCacheResult(outcome: String): ConfigurationCacheResult {
+    return ConfigurationCacheResult(
+        result =
+            ConfigurationCacheResultResponse(
+                outcome = outcome,
+                entrySize = 1L,
+                store = ConfigurationCacheOperation(duration = 1L, hasFailed = false),
+                load = null,
             ),
     )
 }
 
-private class SucceedingProfileRepository : FakeTestRepository() {
-    override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
-        return sampleProfileOverview()
+private class SucceedingConfigurationCacheRepository : FakeTestRepository() {
+    override suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult {
+        return sampleConfigurationCacheResult(id)
     }
 }
 
-private class FailingProfileOverviewRepository : FakeTestRepository() {
-    override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
+private class FailingConfigurationCacheOverviewRepository : FakeTestRepository() {
+    override suspend fun getConfigurationCacheResult(id: String): ConfigurationCacheResult {
         throw RuntimeException("repository failure")
     }
 }

@@ -29,9 +29,8 @@ class ConcurrentSemaphorePermitReleaseTest {
             listOf(
                 "GetBuildsWithCachePerformanceRequest.kt",
                 "GetBuildsResourceUsageRequest.kt",
-                "GetBuildsProfileRequest.kt",
-                "GetConfigurationCacheResultRequest.kt",
                 "GetScanAttribute.kt",
+                "BuildScanBatchProcessor.kt",
             )
 
         requestSources.forEach { fileName ->
@@ -39,6 +38,23 @@ class ConcurrentSemaphorePermitReleaseTest {
             assertTrue(source.contains("withPermit"), "$fileName should use Semaphore.withPermit")
             assertFalse(source.contains("semaphore.acquire()"), "$fileName should not call acquire() manually")
             assertFalse(source.contains("semaphore.release()"), "$fileName should not call release() manually")
+        }
+    }
+
+    @Test
+    fun convertedBatchRequestsDelegateSemaphoreAndProgressToHelper() {
+        val convertedSources =
+            listOf(
+                "GetBuildsProfileRequest.kt",
+                "GetConfigurationCacheResultRequest.kt",
+            )
+
+        convertedSources.forEach { fileName ->
+            val source = File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/$fileName").readText()
+            assertTrue(source.contains("BuildScanBatchProcessor"), "$fileName should use BuildScanBatchProcessor")
+            assertFalse(source.contains("Semaphore("), "$fileName should not allocate Semaphore directly")
+            assertFalse(source.contains("ProgressFeedback("), "$fileName should not allocate ProgressFeedback directly")
+            assertFalse(source.contains("withPermit"), "$fileName should not own semaphore permits")
         }
     }
 
