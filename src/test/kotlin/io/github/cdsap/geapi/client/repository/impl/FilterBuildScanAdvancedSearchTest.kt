@@ -1,10 +1,11 @@
 package io.github.cdsap.geapi.client.repository.impl
 
 import io.github.cdsap.geapi.client.model.Filter
+import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class BuildScanAdvancedSearchQueryTest {
+class FilterBuildScanAdvancedSearchTest {
     @Test
     fun testFilterWithOnlyTags() {
         val filter =
@@ -13,7 +14,7 @@ class BuildScanAdvancedSearchQueryTest {
                 exclusiveTags = false,
             )
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"tag1\"%20OR%20tag:\"tag2\"%20OR%20tag:\"tag3\")"
@@ -33,7 +34,7 @@ class BuildScanAdvancedSearchQueryTest {
                 user = "john_doe",
             )
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
@@ -55,7 +56,7 @@ class BuildScanAdvancedSearchQueryTest {
                 user = "john_doe",
             )
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString =
@@ -69,7 +70,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterWithOnlyProject() {
         val filter = Filter(project = "myProject")
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "project:myProject"
@@ -81,7 +82,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterWithOnlyIncludeFailedBuilds() {
         val filter = Filter(includeFailedBuilds = true)
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = ""
@@ -93,7 +94,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterNegativeTags() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main"))
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
@@ -105,7 +106,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterNegativeTagsWithoutExclusiveTags() {
         val filter = Filter(exclusiveTags = false, tags = listOf("ci", "!main"))
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\")"
@@ -117,7 +118,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterNegativeTagsOnlyStripsFirstCharacter() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!!main"))
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"!main\")"
@@ -129,7 +130,7 @@ class BuildScanAdvancedSearchQueryTest {
     fun testFilterNegativeTagsMoreThanOne() {
         val filter = Filter(exclusiveTags = true, tags = listOf("ci", "!main", "!Dirty"))
 
-        val filterBuildScan = BuildScanAdvancedSearchQuery()
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
         val queryString = filterBuildScan.filter(filter)
 
         val expectedQueryString = "(tag:\"ci\"%20AND%20-tag:\"main\"%20AND%20-tag:\"Dirty\")"

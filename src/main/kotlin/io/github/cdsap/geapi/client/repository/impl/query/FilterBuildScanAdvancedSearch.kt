@@ -1,8 +1,8 @@
-package io.github.cdsap.geapi.client.repository.impl
+package io.github.cdsap.geapi.client.repository.impl.query
 
 import io.github.cdsap.geapi.client.model.Filter
 
-class BuildScanAdvancedSearchQuery {
+class FilterBuildScanAdvancedSearch {
     fun filter(filter: Filter): String {
         var filterIncludedBuildValue = ""
         if (filter.includeFailedBuilds != null) {

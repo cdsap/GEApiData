@@ -11,6 +11,7 @@ import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.network.GEClient
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
 
 class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepository {
     override suspend fun getBuildScans(
@@ -80,7 +81,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
             } else {
                 1000
             }
-        val query = BuildScanAdvancedSearchQuery().filter(filter)
+        val query = FilterBuildScanAdvancedSearch().filter(filter)
 
         return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true&query=$query")
     }
