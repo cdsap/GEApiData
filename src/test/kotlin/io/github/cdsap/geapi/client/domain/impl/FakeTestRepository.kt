@@ -21,6 +21,7 @@ open class FakeTestRepository : GradleEnterpriseRepository {
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
+        query: String,
         buildId: String?,
     ): Array<Scan> {
         TODO("Not yet implemented")
