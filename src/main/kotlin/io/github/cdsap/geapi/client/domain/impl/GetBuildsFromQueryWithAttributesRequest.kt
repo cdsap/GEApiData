@@ -7,6 +7,7 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -35,17 +36,18 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnte
 
         var continueCalls = true
         var previousBuildScansSize = 0
+        val query = FilterBuildScanAdvancedSearch().filter(filter)
 
         while (buildScans.size < filter.maxBuilds && continueCalls) {
             val scans =
                 if (buildScans.size == 0) {
                     if (filter.sinceBuildId != null) {
-                        repository.getBuildScansWithAdvancedQuery(filter, filter.sinceBuildId)
+                        repository.getBuildScansWithAdvancedQuery(filter, query, filter.sinceBuildId)
                     } else {
-                        repository.getBuildScansWithAdvancedQuery(filter)
+                        repository.getBuildScansWithAdvancedQuery(filter, query)
                     }
                 } else {
-                    repository.getBuildScansWithAdvancedQuery(filter, buildScans.last().id)
+                    repository.getBuildScansWithAdvancedQuery(filter, query, buildScans.last().id)
                 }
 
             if (buildScans.size + scans.size > filter.maxBuilds) {

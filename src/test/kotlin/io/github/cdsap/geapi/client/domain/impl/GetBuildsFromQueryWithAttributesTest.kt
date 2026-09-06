@@ -11,9 +11,11 @@ import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.test.assertTrue
 
 class GetBuildsFromQueryWithAttributesTest {
     @Test
@@ -111,6 +113,142 @@ class GetBuildsFromQueryWithAttributesTest {
 
             assertEquals(90, result.size)
         }
+
+    @Test
+    fun advancedQueryIsBuiltOnceAndPassedToRepository() =
+        runBlocking {
+            val capturingRepository = QueryCapturingRepository()
+            val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
+
+            val filter =
+                Filter(
+                    maxBuilds = 100,
+                    concurrentCalls = 1,
+                    includeFailedBuilds = false,
+                    project = "nowinandroid",
+                    tags = listOf("tag1", "tag2"),
+                    requestedTask = null,
+                    user = null,
+                )
+
+            request.get(filter)
+
+            val expectedQuery = FilterBuildScanAdvancedSearch().filter(filter)
+            assertEquals(1, capturingRepository.queries.size)
+            assertEquals(expectedQuery, capturingRepository.queries.single())
+        }
+
+    @Test
+    fun advancedQueryIsReusedAcrossPaginatedCalls() =
+        runBlocking {
+            val capturingRepository = PaginatingQueryCapturingRepository()
+            val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
+
+            val filter =
+                Filter(
+                    maxBuilds = 1500,
+                    concurrentCalls = 1,
+                    includeFailedBuilds = false,
+                    project = "nowinandroid",
+                    tags = listOf("tag1", "tag2"),
+                    requestedTask = null,
+                    user = null,
+                )
+
+            request.get(filter)
+
+            val expectedQuery = FilterBuildScanAdvancedSearch().filter(filter)
+            assertEquals(2, capturingRepository.queries.size)
+            assertTrue(capturingRepository.queries.all { it == expectedQuery })
+        }
+}
+
+internal class QueryCapturingRepository : FakeTestRepository() {
+    val queries = mutableListOf<String>()
+
+    override suspend fun getBuildScansWithAdvancedQuery(
+        filter: Filter,
+        query: String,
+        buildId: String?,
+    ): Array<Scan> {
+        queries.add(query)
+        return Array(filter.maxBuilds.coerceAtMost(1000)) { i ->
+            Scan(id = (i + 1).toString(), buildToolType = "gradle")
+        }
+    }
+
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        return GradleScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio", "3"),
+            values = emptyArray(),
+            requestedTasks = emptyArray(),
+            rootProjectName = "nowinandroid",
+            tags = arrayOf("tag1"),
+        )
+    }
+
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
+        return MavenScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio", "3"),
+            values = emptyArray(),
+            requestedGoals = emptyArray(),
+            topLevelProjectName = "nowinandroid",
+            tags = arrayOf("tag1"),
+        )
+    }
+}
+
+internal class PaginatingQueryCapturingRepository : FakeTestRepository() {
+    val queries = mutableListOf<String>()
+
+    override suspend fun getBuildScansWithAdvancedQuery(
+        filter: Filter,
+        query: String,
+        buildId: String?,
+    ): Array<Scan> {
+        queries.add(query)
+        val startId = buildId?.toIntOrNull()?.plus(1) ?: 1
+        val pageSize = if (buildId == null) 1000 else filter.maxBuilds - 1000
+        return Array(pageSize) { i ->
+            Scan(id = (startId + i).toString(), buildToolType = "gradle")
+        }
+    }
+
+    override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        return GradleScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio", "3"),
+            values = emptyArray(),
+            requestedTasks = emptyArray(),
+            rootProjectName = "nowinandroid",
+            tags = arrayOf("tag1"),
+        )
+    }
+
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
+        return MavenScan(
+            id = id,
+            buildStartTime = System.currentTimeMillis(),
+            buildDuration = 10L,
+            hasFailed = false,
+            environment = Environment("kio", "3"),
+            values = emptyArray(),
+            requestedGoals = emptyArray(),
+            topLevelProjectName = "nowinandroid",
+            tags = arrayOf("tag1"),
+        )
+    }
 }
 
 internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems: List<String>) :
@@ -124,6 +262,7 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
+        query: String,
         buildId: String?,
     ): Array<Scan> {
         val scans = mutableListOf<Scan>()
@@ -206,6 +345,7 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
 internal class FakeEmptyRepositoryWithQuery : FakeTestRepository() {
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
+        query: String,
         buildId: String?,
     ): Array<Scan> {
         return emptyArray<Scan>()

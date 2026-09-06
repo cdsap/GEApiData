@@ -160,6 +160,7 @@ internal class FakeGradleEnterpriseRepository(private val buildSystems: List<Str
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
+        query: String,
         buildId: String?,
     ): Array<Scan> {
         TODO("Not yet implemented")

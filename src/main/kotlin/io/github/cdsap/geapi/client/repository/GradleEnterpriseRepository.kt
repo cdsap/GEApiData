@@ -18,6 +18,7 @@ interface GradleEnterpriseRepository {
 
     suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
+        query: String,
         buildId: String? = null,
     ): Array<Scan>
 
