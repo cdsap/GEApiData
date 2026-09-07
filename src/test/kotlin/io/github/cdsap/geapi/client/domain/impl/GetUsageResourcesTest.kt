@@ -49,6 +49,7 @@ class GetUsageResourcesTest {
 
             assertEquals(1, result.size)
             assertEquals(result[0].builtTool, "gradle")
+            assertEquals(result[0].projectName, "AnotherProject")
             assert(result[0].tags.contains("tag3"))
             assertEquals(result[0].total.allProcessesCpu.max == 100L, true)
             assertEquals(result[0].total.allProcessesCpu.average == 50L, true)
