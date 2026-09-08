@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.lang.NullPointerException
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -46,19 +47,18 @@ class GetBuildsWithArtifactTransformRequest(private val repository: GradleEnterp
             val runningTasks =
                 builds.map {
                     async {
-                        semaphore.acquire()
-                        val scanId = it.id
-                        try {
-                            val artifactTransform =
-                                repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
-                            artifactTransform.map { it.buildScanId = scanId }
-                            progressFeedback.update()
-                            semaphore.release()
-                            artifactTransform
-                        } catch (exception: NullPointerException) {
-                            progressFeedback.update()
-                            semaphore.release()
-                            emptyArray<ArtifactTransform>()
+                        semaphore.withPermit {
+                            val scanId = it.id
+                            try {
+                                val artifactTransform =
+                                    repository.getArtifactTransformRequest(scanId).artifactTransformExecutions
+                                artifactTransform.map { transform -> transform.buildScanId = scanId }
+                                progressFeedback.update()
+                                artifactTransform
+                            } catch (exception: NullPointerException) {
+                                progressFeedback.update()
+                                emptyArray<ArtifactTransform>()
+                            }
                         }
                     }
                 }
