@@ -12,6 +12,8 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
+import io.github.cdsap.geapi.client.model.ArtifactTransform
+import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -27,6 +29,7 @@ class ConcurrentSemaphorePermitReleaseTest {
     fun listedRequestLoopsUseWithPermitInsteadOfManualRelease() {
         val requestSources =
             listOf(
+                "GetBuildsWithArtifactTransformRequest.kt",
                 "GetBuildsWithCachePerformanceRequest.kt",
                 "GetBuildsResourceUsageRequest.kt",
                 "GetScanAttribute.kt",
@@ -145,6 +148,36 @@ class ConcurrentSemaphorePermitReleaseTest {
         }
 
     @Test
+    fun artifactTransformPropagatesRepositoryFailureWithoutHanging() =
+        runBlocking {
+            val request = GetBuildsWithArtifactTransformRequest(FailingArtifactTransformRepository())
+            val filter = Filter(concurrentCallsConservative = 1)
+
+            val thrown =
+                assertFailsWith<RuntimeException> {
+                    withTimeout(5.seconds) {
+                        request.get(sampleScans(3), filter)
+                    }
+                }
+
+            assertEquals("repository failure", thrown.message)
+        }
+
+    @Test
+    fun artifactTransformReturnsEmptyForNullPointerException() =
+        runBlocking {
+            val request = GetBuildsWithArtifactTransformRequest(NullPointerArtifactTransformRepository())
+            val filter = Filter(concurrentCallsConservative = 1)
+
+            val result =
+                withTimeout(5.seconds) {
+                    request.get(sampleScans(2), filter)
+                }
+
+            assertEquals(emptyList<ArtifactTransform>(), result)
+        }
+
+    @Test
     fun cachePerformanceCompletesAllBuildsWhenConcurrencyIsOne() =
         runBlocking {
             val request = GetBuildsWithCachePerformanceRequest(SucceedingCacheRepository())
@@ -218,5 +251,17 @@ private class FailingConfigurationCacheRepository : FakeTestRepository() {
 private class FailingScanAttributeRepository : FakeTestRepository() {
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
         throw RuntimeException("repository failure")
+    }
+}
+
+private class FailingArtifactTransformRepository : FakeTestRepository() {
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+        throw RuntimeException("repository failure")
+    }
+}
+
+private class NullPointerArtifactTransformRepository : FakeTestRepository() {
+    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+        throw NullPointerException()
     }
 }
