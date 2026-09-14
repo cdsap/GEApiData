@@ -30,9 +30,11 @@ class GetConfigurationCacheResultRequestTest {
         assertTrue(requestSource.contains("BuildScanBatchProcessor"))
         assertFalse(requestSource.contains("Semaphore("))
         assertFalse(requestSource.contains("ProgressFeedback("))
-        assertTrue(helperSource.contains("withPermit"))
+        assertTrue(helperSource.contains("executeWithPermit"))
         assertFalse(helperSource.contains("semaphore.acquire()"))
         assertFalse(helperSource.contains("semaphore.release()"))
+        assertFalse(helperSource.contains("semaphore.withPermit"))
+        assertFalse(helperSource.contains("import kotlinx.coroutines.sync.withPermit"))
     }
 
     @Test

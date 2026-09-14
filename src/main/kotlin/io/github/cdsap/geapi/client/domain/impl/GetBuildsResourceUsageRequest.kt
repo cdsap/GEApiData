@@ -12,7 +12,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -47,7 +46,7 @@ class GetBuildsResourceUsageRequest(private val repository: GradleEnterpriseRepo
             val runningTasks =
                 builds.filter { it.buildTool == "gradle" }.map {
                     async {
-                        semaphore.withPermit {
+                        semaphore.executeWithPermit {
                             val scanAttributes = it
 
                             val processUsage =
