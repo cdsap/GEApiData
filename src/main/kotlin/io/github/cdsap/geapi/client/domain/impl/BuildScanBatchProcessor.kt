@@ -7,7 +7,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 
 internal object BuildScanBatchProcessor {
     suspend fun <T> process(
@@ -24,7 +23,7 @@ internal object BuildScanBatchProcessor {
         return coroutineScope {
             builds.filter(predicate).map { build ->
                 async {
-                    semaphore.withPermit {
+                    semaphore.executeWithPermit {
                         transform(build).also {
                             progressFeedback.update()
                         }

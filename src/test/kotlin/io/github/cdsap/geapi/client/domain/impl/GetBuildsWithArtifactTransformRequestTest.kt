@@ -66,14 +66,16 @@ class GetBuildsWithArtifactTransformRequestTest {
         }
 
     @Test
-    fun `uses withPermit instead of manual semaphore acquire and release`() {
+    fun `uses executeWithPermit instead of manual semaphore acquire and release`() {
         val source =
             File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetBuildsWithArtifactTransformRequest.kt")
                 .readText()
 
-        assertTrue(source.contains("withPermit"))
+        assertTrue(source.contains("executeWithPermit"))
         assertFalse(source.contains("semaphore.acquire()"))
         assertFalse(source.contains("semaphore.release()"))
+        assertFalse(source.contains("semaphore.withPermit"))
+        assertFalse(source.contains("import kotlinx.coroutines.sync.withPermit"))
     }
 
     @Test

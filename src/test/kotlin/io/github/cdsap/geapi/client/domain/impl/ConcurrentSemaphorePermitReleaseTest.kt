@@ -15,6 +15,7 @@ import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.model.ArtifactTransform
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -26,7 +27,30 @@ import kotlin.time.Duration.Companion.seconds
 
 class ConcurrentSemaphorePermitReleaseTest {
     @Test
-    fun listedRequestLoopsUseWithPermitInsteadOfManualRelease() {
+    fun failedBlockReleasesPermitSoALaterBlockCanAcquire() =
+        runBlocking {
+            val semaphore = Semaphore(permits = 1)
+
+            val thrown =
+                assertFailsWith<RuntimeException> {
+                    semaphore.executeWithPermit {
+                        throw RuntimeException("first request failed")
+                    }
+                }
+            assertEquals("first request failed", thrown.message)
+
+            val result =
+                withTimeout(5.seconds) {
+                    semaphore.executeWithPermit {
+                        "second request succeeded"
+                    }
+                }
+
+            assertEquals("second request succeeded", result)
+        }
+
+    @Test
+    fun listedRequestLoopsUseExecuteWithPermitInsteadOfManualRelease() {
         val requestSources =
             listOf(
                 "GetBuildsWithArtifactTransformRequest.kt",
@@ -38,10 +62,26 @@ class ConcurrentSemaphorePermitReleaseTest {
 
         requestSources.forEach { fileName ->
             val source = File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/$fileName").readText()
-            assertTrue(source.contains("withPermit"), "$fileName should use Semaphore.withPermit")
+            assertTrue(source.contains("executeWithPermit"), "$fileName should use Semaphore.executeWithPermit")
             assertFalse(source.contains("semaphore.acquire()"), "$fileName should not call acquire() manually")
             assertFalse(source.contains("semaphore.release()"), "$fileName should not call release() manually")
+            assertFalse(source.contains("semaphore.withPermit"), "$fileName should not call withPermit directly")
+            assertFalse(
+                source.contains("import kotlinx.coroutines.sync.withPermit"),
+                "$fileName should not import withPermit",
+            )
         }
+    }
+
+    @Test
+    fun semaphoreSupportReleasesPermitInFinally() {
+        val source =
+            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/SemaphoreSupport.kt").readText()
+
+        assertTrue(source.contains("acquire()"))
+        assertTrue(source.contains("release()"))
+        assertTrue(source.contains("try {"))
+        assertTrue(source.contains("finally {"))
     }
 
     @Test
@@ -57,7 +97,12 @@ class ConcurrentSemaphorePermitReleaseTest {
             assertTrue(source.contains("BuildScanBatchProcessor"), "$fileName should use BuildScanBatchProcessor")
             assertFalse(source.contains("Semaphore("), "$fileName should not allocate Semaphore directly")
             assertFalse(source.contains("ProgressFeedback("), "$fileName should not allocate ProgressFeedback directly")
-            assertFalse(source.contains("withPermit"), "$fileName should not own semaphore permits")
+            assertFalse(source.contains("executeWithPermit"), "$fileName should not own semaphore permits")
+            assertFalse(source.contains("semaphore.withPermit"), "$fileName should not own semaphore permits")
+            assertFalse(
+                source.contains("import kotlinx.coroutines.sync.withPermit"),
+                "$fileName should not import withPermit",
+            )
         }
     }
 

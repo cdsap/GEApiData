@@ -20,14 +20,16 @@ import kotlin.time.Duration.Companion.seconds
 
 class GetScanAttributeTest {
     @Test
-    fun usesWithPermitInsteadOfManualAcquireRelease() {
+    fun usesExecuteWithPermitInsteadOfManualAcquireRelease() {
         val source =
             File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetScanAttribute.kt")
                 .readText()
 
-        assertTrue(source.contains("withPermit"))
+        assertTrue(source.contains("executeWithPermit"))
         assertFalse(source.contains("semaphore.acquire()"))
         assertFalse(source.contains("semaphore.release()"))
+        assertFalse(source.contains("semaphore.withPermit"))
+        assertFalse(source.contains("import kotlinx.coroutines.sync.withPermit"))
     }
 
     @Test
