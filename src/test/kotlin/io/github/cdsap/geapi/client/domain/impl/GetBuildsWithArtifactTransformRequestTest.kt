@@ -66,12 +66,13 @@ class GetBuildsWithArtifactTransformRequestTest {
         }
 
     @Test
-    fun `uses executeWithPermit instead of manual semaphore acquire and release`() {
+    fun `uses BoundedRequestExecutor instead of manual semaphore acquire and release`() {
         val source =
             File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetBuildsWithArtifactTransformRequest.kt")
                 .readText()
 
-        assertTrue(source.contains("executeWithPermit"))
+        assertTrue(source.contains("BoundedRequestExecutor"))
+        assertFalse(source.contains("Semaphore("))
         assertFalse(source.contains("semaphore.acquire()"))
         assertFalse(source.contains("semaphore.release()"))
         assertFalse(source.contains("semaphore.withPermit"))

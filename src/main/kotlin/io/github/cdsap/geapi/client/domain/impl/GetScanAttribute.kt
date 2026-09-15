@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
+import io.github.cdsap.geapi.client.domain.impl.concurrency.BoundedRequestExecutor
 import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.domain.impl.mapper.ScanMapper
 import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
@@ -9,10 +10,6 @@ import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.sync.Semaphore
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -26,26 +23,20 @@ class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
         logger.log("Getting ${buildScans.size} Build Scans Attributes")
 
         val duration = System.currentTimeMillis().toDuration(DurationUnit.MILLISECONDS)
-        val semaphore = Semaphore(permits = filter.concurrentCalls)
         val progressFeedback = ProgressFeedback(filter.clientType, buildScans.size)
         val scanMapper = ScanMapper()
-        val scans = mutableListOf<ScanWithAttributes>()
 
         progressFeedback.init()
 
-        coroutineScope {
-            val runningTasks =
-                buildScans.filter { it.buildToolType == "gradle" || it.buildToolType == "maven" }.map { sc ->
-                    async {
-                        semaphore.executeWithPermit {
-                            val scan = scanWithAttributes(sc, scanMapper)
-                            progressFeedback.update()
-                            scan
-                        }
-                    }
-                }
-            scans.addAll(runningTasks.awaitAll())
-        }
+        val scans =
+            BoundedRequestExecutor.execute(
+                items = buildScans.filter { it.buildToolType == "gradle" || it.buildToolType == "maven" },
+                concurrentCalls = filter.concurrentCalls,
+            ) { sc ->
+                val scan = scanWithAttributes(sc, scanMapper)
+                progressFeedback.update()
+                scan
+            }
         logBuildScanAttributesInformation(duration, logger)
         return scans
     }

@@ -1,5 +1,6 @@
 package io.github.cdsap.geapi.client.domain.impl
 
+import io.github.cdsap.geapi.client.domain.impl.concurrency.BoundedRequestExecutor
 import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.model.AvoidanceSavingsSummary
 import io.github.cdsap.geapi.client.model.Build
@@ -15,7 +16,6 @@ import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.model.ArtifactTransform
 import io.github.cdsap.geapi.client.model.ArtifactTransforms
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -27,30 +27,27 @@ import kotlin.time.Duration.Companion.seconds
 
 class ConcurrentSemaphorePermitReleaseTest {
     @Test
-    fun failedBlockReleasesPermitSoALaterBlockCanAcquire() =
+    fun failedBlockReleasesPermitSoSiblingWorkDoesNotHang() =
         runBlocking {
-            val semaphore = Semaphore(permits = 1)
-
             val thrown =
                 assertFailsWith<RuntimeException> {
-                    semaphore.executeWithPermit {
-                        throw RuntimeException("first request failed")
+                    withTimeout(5.seconds) {
+                        BoundedRequestExecutor.execute(
+                            items = listOf(1, 2, 3),
+                            concurrentCalls = 1,
+                        ) { item ->
+                            if (item == 1) {
+                                throw RuntimeException("first request failed")
+                            }
+                            item
+                        }
                     }
                 }
             assertEquals("first request failed", thrown.message)
-
-            val result =
-                withTimeout(5.seconds) {
-                    semaphore.executeWithPermit {
-                        "second request succeeded"
-                    }
-                }
-
-            assertEquals("second request succeeded", result)
         }
 
     @Test
-    fun listedRequestLoopsUseExecuteWithPermitInsteadOfManualRelease() {
+    fun listedRequestLoopsDelegateToBoundedRequestExecutor() {
         val requestSources =
             listOf(
                 "GetBuildsWithArtifactTransformRequest.kt",
@@ -62,7 +59,8 @@ class ConcurrentSemaphorePermitReleaseTest {
 
         requestSources.forEach { fileName ->
             val source = File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/$fileName").readText()
-            assertTrue(source.contains("executeWithPermit"), "$fileName should use Semaphore.executeWithPermit")
+            assertTrue(source.contains("BoundedRequestExecutor"), "$fileName should use BoundedRequestExecutor")
+            assertFalse(source.contains("Semaphore("), "$fileName should not allocate Semaphore directly")
             assertFalse(source.contains("semaphore.acquire()"), "$fileName should not call acquire() manually")
             assertFalse(source.contains("semaphore.release()"), "$fileName should not call release() manually")
             assertFalse(source.contains("semaphore.withPermit"), "$fileName should not call withPermit directly")
@@ -74,14 +72,16 @@ class ConcurrentSemaphorePermitReleaseTest {
     }
 
     @Test
-    fun semaphoreSupportReleasesPermitInFinally() {
+    fun boundedRequestExecutorReleasesPermitWithWithPermit() {
         val source =
-            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/SemaphoreSupport.kt").readText()
+            File(
+                "src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/concurrency/BoundedRequestExecutor.kt",
+            ).readText()
 
-        assertTrue(source.contains("acquire()"))
-        assertTrue(source.contains("release()"))
-        assertTrue(source.contains("try {"))
-        assertTrue(source.contains("finally {"))
+        assertTrue(source.contains("withPermit"))
+        assertTrue(source.contains("Semaphore("))
+        assertTrue(source.contains("async"))
+        assertTrue(source.contains("awaitAll"))
     }
 
     @Test
@@ -97,7 +97,7 @@ class ConcurrentSemaphorePermitReleaseTest {
             assertTrue(source.contains("BuildScanBatchProcessor"), "$fileName should use BuildScanBatchProcessor")
             assertFalse(source.contains("Semaphore("), "$fileName should not allocate Semaphore directly")
             assertFalse(source.contains("ProgressFeedback("), "$fileName should not allocate ProgressFeedback directly")
-            assertFalse(source.contains("executeWithPermit"), "$fileName should not own semaphore permits")
+            assertFalse(source.contains("BoundedRequestExecutor"), "$fileName should not own bounded execution")
             assertFalse(source.contains("semaphore.withPermit"), "$fileName should not own semaphore permits")
             assertFalse(
                 source.contains("import kotlinx.coroutines.sync.withPermit"),
@@ -234,6 +234,20 @@ class ConcurrentSemaphorePermitReleaseTest {
                 }
 
             assertEquals(3, result.size)
+        }
+
+    @Test
+    fun boundedRequestExecutorPreservesInputOrder() =
+        runBlocking {
+            val result =
+                BoundedRequestExecutor.execute(
+                    items = listOf("a", "b", "c"),
+                    concurrentCalls = 2,
+                ) { item ->
+                    item.uppercase()
+                }
+
+            assertEquals(listOf("A", "B", "C"), result)
         }
 
     private fun sampleScans(count: Int): List<ScanWithAttributes> {
