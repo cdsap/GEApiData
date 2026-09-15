@@ -20,12 +20,13 @@ import kotlin.time.Duration.Companion.seconds
 
 class GetScanAttributeTest {
     @Test
-    fun usesExecuteWithPermitInsteadOfManualAcquireRelease() {
+    fun usesBoundedRequestExecutorInsteadOfManualSemaphoreOrchestration() {
         val source =
             File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetScanAttribute.kt")
                 .readText()
 
-        assertTrue(source.contains("executeWithPermit"))
+        assertTrue(source.contains("BoundedRequestExecutor"))
+        assertFalse(source.contains("Semaphore("))
         assertFalse(source.contains("semaphore.acquire()"))
         assertFalse(source.contains("semaphore.release()"))
         assertFalse(source.contains("semaphore.withPermit"))
