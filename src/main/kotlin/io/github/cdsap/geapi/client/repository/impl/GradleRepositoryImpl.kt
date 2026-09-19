@@ -17,7 +17,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         filter: Filter,
         buildId: String?,
     ): Array<Scan> {
-        return getBuildScansRequest(filter, buildId)
+        return client.get(buildBuildScansUrl(filter, buildId))
     }
 
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
@@ -57,14 +57,13 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         query: String,
         buildId: String?,
     ): Array<Scan> {
-        return getBuildScansRequest(filter, buildId, query)
+        return client.get("${buildBuildScansUrl(filter, buildId)}&query=$query")
     }
 
-    private suspend fun getBuildScansRequest(
+    private fun buildBuildScansUrl(
         filter: Filter,
         buildId: String?,
-        query: String? = null,
-    ): Array<Scan> {
+    ): String {
         val filtering =
             if (buildId != null) {
                 "fromBuild=$buildId"
@@ -77,12 +76,6 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
             } else {
                 1000
             }
-        val queryParameter =
-            if (query != null) {
-                "&query=$query"
-            } else {
-                ""
-            }
-        return client.get("${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true$queryParameter")
+        return "${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true"
     }
 }
