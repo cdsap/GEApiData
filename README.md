@@ -222,6 +222,31 @@ in parameters like `project`,`tags` or `requestedTask`.
 | concurrentCalls             | Concurrent calls for the Attributes request                                   | 10             |
 | concurrentCallsConservative | Concurrent calls for Cache request                                            | 5              |
 | clientType                  | Type of client, API or CLI                                                    | ClientType.API |
+| advancedQuery               | Extra advanced query terms. Requires GE 2023.3 and a query based request      | null           |
+
+### Advanced Query Terms
+Requests based on the advanced query language build the query from the `Filter` properties. `advancedQuery` allows to
+append any other term supported by the Develocity advanced search syntax, for cases not covered by the `Filter`
+properties:
+```kotlin
+val repository = GradleRepositoryImpl(GEClient(apiKey, url))
+val filter =
+    Filter(
+        maxBuilds = 5000,
+        project = "nowinandroid",
+        advancedQuery = "gradle.buildCache.hasError:true",
+    )
+val getBuildScans = GetBuildsFromQueryWithAttributesRequest(repository).get(filter)
+```
+The resulting query is `project:nowinandroid gradle.buildCache.hasError:true`, so the terms are combined with the rest
+of the filter. Multiple terms can be combined using the advanced search syntax:
+```kotlin
+Filter(advancedQuery = "gradle.buildCache.hasError:true AND buildStartTime:-7d")
+```
+Notes:
+* `advancedQuery` is only used by the requests based on the advanced query language, like
+`GetBuildsFromQueryWithAttributesRequest`. `GetBuildsWithAttributesRequest` ignores it.
+* Whitespace is encoded, the rest of the value is sent as provided.
 
 ## Real Examples
 

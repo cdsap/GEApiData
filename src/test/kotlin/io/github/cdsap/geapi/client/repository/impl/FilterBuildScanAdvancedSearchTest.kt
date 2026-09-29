@@ -137,4 +137,74 @@ class FilterBuildScanAdvancedSearchTest {
 
         assertEquals(expectedQueryString, queryString)
     }
+
+    @Test
+    fun testFilterWithOnlyAdvancedQuery() {
+        val filter = Filter(advancedQuery = "gradle.buildCache.hasError:true")
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "gradle.buildCache.hasError:true"
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testAdvancedQueryIsAppendedToTheRestOfTheFilter() {
+        val filter =
+            Filter(
+                project = "myProject",
+                includeFailedBuilds = false,
+                tags = listOf("ci"),
+                user = "john_doe",
+                requestedTask = ":app:compile",
+                advancedQuery = "gradle.buildCache.hasError:true",
+            )
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString =
+            "project:myProject%20(tag:\"ci\")%20buildOutcome:succeeded%20user:john_doe" +
+                "%20requested:\\:app\\:compile%20gradle.buildCache.hasError:true"
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testAdvancedQueryWhitespaceIsEncoded() {
+        val filter = Filter(advancedQuery = "  gradle.buildCache.hasError:true AND   tag:\"ci\"  ")
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "gradle.buildCache.hasError:true%20AND%20tag:\"ci\""
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testAdvancedQueryAlreadyEncodedIsNotModified() {
+        val filter = Filter(advancedQuery = "gradle.buildCache.hasError:true%20AND%20tag:\"ci\"")
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "gradle.buildCache.hasError:true%20AND%20tag:\"ci\""
+
+        assertEquals(expectedQueryString, queryString)
+    }
+
+    @Test
+    fun testBlankAdvancedQueryIsIgnored() {
+        val filter = Filter(project = "myProject", advancedQuery = "   ")
+
+        val filterBuildScan = FilterBuildScanAdvancedSearch()
+        val queryString = filterBuildScan.filter(filter)
+
+        val expectedQueryString = "project:myProject"
+
+        assertEquals(expectedQueryString, queryString)
+    }
 }

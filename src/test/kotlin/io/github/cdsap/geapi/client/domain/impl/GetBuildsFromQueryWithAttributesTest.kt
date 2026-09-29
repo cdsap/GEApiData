@@ -161,6 +161,28 @@ class GetBuildsFromQueryWithAttributesTest {
             assertEquals(2, capturingRepository.queries.size)
             assertTrue(capturingRepository.queries.all { it == expectedQuery })
         }
+
+    @Test
+    fun advancedQueryFromFilterIsPassedToRepository() =
+        runBlocking {
+            val capturingRepository = QueryCapturingRepository()
+            val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
+
+            val filter =
+                Filter(
+                    maxBuilds = 100,
+                    concurrentCalls = 1,
+                    project = "nowinandroid",
+                    advancedQuery = "gradle.buildCache.hasError:true",
+                )
+
+            request.get(filter)
+
+            assertEquals(
+                "project:nowinandroid%20gradle.buildCache.hasError:true",
+                capturingRepository.queries.single(),
+            )
+        }
 }
 
 internal class QueryCapturingRepository : FakeTestRepository() {
