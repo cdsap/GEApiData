@@ -36,6 +36,11 @@ class FilterBuildScanAdvancedSearch {
             filterUser = "user:${filter.user}"
         }
 
+        var filterAdvancedQuery = ""
+        if (!filter.advancedQuery.isNullOrBlank()) {
+            filterAdvancedQuery = encodeSpaces(filter.advancedQuery)
+        }
+
         var queryString = ""
         if (filterProjectValue.isNotEmpty()) {
             queryString += insertValue(filterProjectValue, queryString)
@@ -52,7 +57,14 @@ class FilterBuildScanAdvancedSearch {
         if (filterRequestedTasks.isNotEmpty()) {
             queryString += insertValue(filterRequestedTasks, queryString)
         }
+        if (filterAdvancedQuery.isNotEmpty()) {
+            queryString += insertValue(filterAdvancedQuery, queryString)
+        }
         return queryString
+    }
+
+    private fun encodeSpaces(value: String): String {
+        return value.trim().replace(Regex("\\s+"), "%20")
     }
 
     private fun insertValue(
