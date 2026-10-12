@@ -114,6 +114,58 @@ class GetBuildsWithArtifactTransformRequestTest {
         }
 
     @Test
+    fun `releases permit after a failed artifact transform request`() =
+        runBlocking {
+            var calls = 0
+            val repositoryWithTransientFailure =
+                object : FakeTestRepository() {
+                    override suspend fun getArtifactTransformRequest(id: String): ArtifactTransforms {
+                        calls++
+                        if (calls == 1) {
+                            throw NullPointerException()
+                        }
+                        return ArtifactTransforms(FakeRepository().artifactTransforms)
+                    }
+                }
+            val request = GetBuildsWithArtifactTransformRequest(repositoryWithTransientFailure)
+            val builds =
+                listOf(
+                    ScanWithAttributes(
+                        id = "1",
+                        projectName = "project",
+                        requestedTasksGoals = arrayOf("test"),
+                        tags = arrayOf("tag"),
+                        hasFailed = false,
+                        environment = Environment(username = "user", numberOfCpuCores = "2"),
+                        buildDuration = 100,
+                        buildTool = "gradle",
+                        buildStartTime = 1,
+                        values = arrayOf(CustomValue("k", "v")),
+                    ),
+                    ScanWithAttributes(
+                        id = "2",
+                        projectName = "project",
+                        requestedTasksGoals = arrayOf("test"),
+                        tags = arrayOf("tag"),
+                        hasFailed = false,
+                        environment = Environment(username = "user", numberOfCpuCores = "2"),
+                        buildDuration = 100,
+                        buildTool = "gradle",
+                        buildStartTime = 1,
+                        values = arrayOf(CustomValue("k", "v")),
+                    ),
+                )
+
+            val result =
+                withTimeout(5.seconds) {
+                    request.get(builds, Filter(concurrentCallsConservative = 1))
+                }
+
+            assertEquals(2, calls)
+            assertEquals(2, result.size)
+        }
+
+    @Test
     fun `propagates repository failures without hanging`() =
         runBlocking {
             val failingRepository =
