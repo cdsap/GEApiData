@@ -57,12 +57,13 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         query: String,
         buildId: String?,
     ): Array<Scan> {
-        return client.get("${buildBuildScansUrl(filter, buildId)}&query=$query")
+        return client.get(buildBuildScansUrl(filter, buildId, query))
     }
 
     private fun buildBuildScansUrl(
         filter: Filter,
         buildId: String?,
+        query: String? = null,
     ): String {
         val filtering =
             if (buildId != null) {
@@ -76,6 +77,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
             } else {
                 1000
             }
-        return "${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true"
+        val advancedQuery = query?.let { "&query=$it" } ?: ""
+        return "${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true$advancedQuery"
     }
 }
