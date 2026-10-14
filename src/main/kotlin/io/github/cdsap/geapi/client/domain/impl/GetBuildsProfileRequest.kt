@@ -5,11 +5,11 @@ import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.model.BuildProfileOverview
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.BuildProfileRepository
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class GetBuildsProfileRequest(private val repository: GradleEnterpriseRepository) : GetBuildProfile {
+class GetBuildsProfileRequest(private val repository: BuildProfileRepository) : GetBuildProfile {
     override suspend fun get(
         builds: List<ScanWithAttributes>,
         filter: Filter,
