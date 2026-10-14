@@ -8,6 +8,7 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.MemoryPool
 import io.github.cdsap.geapi.client.model.MemoryUsage
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
+import io.github.cdsap.geapi.client.repository.BuildProfileRepository
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -129,13 +130,13 @@ private fun sampleProfileOverview(): BuildProfileOverview {
     )
 }
 
-private class SucceedingProfileRepository : FakeTestRepository() {
+private class SucceedingProfileRepository : BuildProfileRepository {
     override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
         return sampleProfileOverview()
     }
 }
 
-private class FailingProfileOverviewRepository : FakeTestRepository() {
+private class FailingProfileOverviewRepository : BuildProfileRepository {
     override suspend fun getBuildProfileOverview(id: String): BuildProfileOverview {
         throw RuntimeException("repository failure")
     }
