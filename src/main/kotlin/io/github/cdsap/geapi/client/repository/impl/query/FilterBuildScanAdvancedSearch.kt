@@ -4,78 +4,35 @@ import io.github.cdsap.geapi.client.model.Filter
 
 class FilterBuildScanAdvancedSearch {
     fun filter(filter: Filter): String {
-        var filterIncludedBuildValue = ""
-        if (filter.includeFailedBuilds != null) {
-            if (!filter.includeFailedBuilds) {
-                filterIncludedBuildValue = "buildOutcome:succeeded"
+        val filterClauses = buildList {
+            filter.project?.let { add("project:$it") }
+            if (filter.tags.isNotEmpty()) {
+                add(
+                    if (filter.exclusiveTags || filter.tags.any { it[0].toString() == "!" }) {
+                        returnTagQuery(filter, "AND")
+                    } else {
+                        returnTagQuery(filter, "OR")
+                    },
+                )
             }
+            if (filter.includeFailedBuilds == false) {
+                add("buildOutcome:succeeded")
+            }
+            filter.user?.let { add("user:$it") }
+            filter.requestedTask?.let {
+                val escapeColons = it.toString().replace(":", "\\:")
+                add("requested:$escapeColons")
+            }
+            filter.advancedQuery
+                ?.takeUnless { it.isBlank() }
+                ?.let { add(encodeSpaces(it)) }
         }
 
-        var filterProjectValue = ""
-        if (filter.project != null) {
-            filterProjectValue = "project:${filter.project}"
-        }
-        var filterTagsValue = ""
-        if (filter.tags.isNotEmpty()) {
-            filterTagsValue =
-                if (filter.exclusiveTags || filter.tags.any { it[0].toString() == "!" }) {
-                    returnTagQuery(filter, "AND")
-                } else {
-                    returnTagQuery(filter, "OR")
-                }
-        }
-
-        var filterRequestedTasks = ""
-        if (filter.requestedTask != null) {
-            val escapeColons = filter.requestedTask.toString().replace(":", "\\:")
-            filterRequestedTasks = "requested:$escapeColons"
-        }
-
-        var filterUser = ""
-        if (filter.user != null) {
-            filterUser = "user:${filter.user}"
-        }
-
-        var filterAdvancedQuery = ""
-        if (!filter.advancedQuery.isNullOrBlank()) {
-            filterAdvancedQuery = encodeSpaces(filter.advancedQuery)
-        }
-
-        var queryString = ""
-        if (filterProjectValue.isNotEmpty()) {
-            queryString += insertValue(filterProjectValue, queryString)
-        }
-        if (filterTagsValue.isNotEmpty()) {
-            queryString += insertValue(filterTagsValue, queryString)
-        }
-        if (filterIncludedBuildValue.isNotEmpty()) {
-            queryString += insertValue(filterIncludedBuildValue, queryString)
-        }
-        if (filterUser.isNotEmpty()) {
-            queryString += insertValue(filterUser, queryString)
-        }
-        if (filterRequestedTasks.isNotEmpty()) {
-            queryString += insertValue(filterRequestedTasks, queryString)
-        }
-        if (filterAdvancedQuery.isNotEmpty()) {
-            queryString += insertValue(filterAdvancedQuery, queryString)
-        }
-        return queryString
+        return filterClauses.joinToString("%20")
     }
 
     private fun encodeSpaces(value: String): String {
         return value.trim().replace(Regex("\\s+"), "%20")
-    }
-
-    private fun insertValue(
-        value: String,
-        queryString: String,
-    ): String {
-        return if (queryString.isEmpty()) {
-            value
-        } else {
-            "%20$value"
-        }
     }
 
     private fun returnTagQuery(
