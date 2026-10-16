@@ -9,12 +9,12 @@ import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.BuildScanAttributesRepository
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class GetScanAttribute(private val repository: GradleEnterpriseRepository) {
+class GetScanAttribute(private val repository: BuildScanAttributesRepository) {
     suspend fun getScanAttributes(
         buildScans: List<Scan>,
         filter: Filter,
