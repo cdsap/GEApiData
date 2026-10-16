@@ -8,6 +8,7 @@ import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
+import io.github.cdsap.geapi.client.repository.BuildScanAttributesRepository
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -91,7 +92,7 @@ class GetScanAttributeTest {
         }
 }
 
-private class SucceedingScanAttributeRepository : FakeTestRepository() {
+private class SucceedingScanAttributeRepository : BuildScanAttributesRepository {
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
         return GradleScan(
             id = id,
@@ -121,8 +122,12 @@ private class SucceedingScanAttributeRepository : FakeTestRepository() {
     }
 }
 
-private class FailingScanAttributeOverviewRepository : FakeTestRepository() {
+private class FailingScanAttributeOverviewRepository : BuildScanAttributesRepository {
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
+        throw RuntimeException("repository failure")
+    }
+
+    override suspend fun getBuildScanMavenAttribute(id: String): MavenScan {
         throw RuntimeException("repository failure")
     }
 }
