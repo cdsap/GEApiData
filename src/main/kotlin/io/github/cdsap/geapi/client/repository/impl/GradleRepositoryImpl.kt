@@ -65,19 +65,19 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         buildId: String?,
         query: String? = null,
     ): String {
-        val filtering =
-            if (buildId != null) {
-                "fromBuild=$buildId"
-            } else {
-                ""
-            }
         val maxBuilds =
             if (filter.maxBuilds < 1000) {
                 filter.maxBuilds
             } else {
                 1000
             }
-        val advancedQuery = query?.let { "&query=$it" } ?: ""
-        return "${client.url}?$filtering&maxBuilds=$maxBuilds&reverse=true$advancedQuery"
+        val parameters =
+            listOfNotNull(
+                buildId?.let { "fromBuild=$it" },
+                "maxBuilds=$maxBuilds",
+                "reverse=true",
+                query?.let { "query=$it" },
+            )
+        return "${client.url}?${parameters.joinToString("&")}"
     }
 }
