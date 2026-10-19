@@ -11,7 +11,7 @@ import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
-import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
+import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

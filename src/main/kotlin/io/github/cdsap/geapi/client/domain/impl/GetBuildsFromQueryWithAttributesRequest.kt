@@ -7,7 +7,7 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
-import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
+import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
 import java.text.SimpleDateFormat
 import java.util.Date
 
