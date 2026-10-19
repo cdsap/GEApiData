@@ -1,7 +1,6 @@
 package io.github.cdsap.geapi.client.repository.impl
 
 import io.github.cdsap.geapi.client.model.Filter
-import io.github.cdsap.geapi.client.repository.impl.query.FilterBuildScanAdvancedSearch
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

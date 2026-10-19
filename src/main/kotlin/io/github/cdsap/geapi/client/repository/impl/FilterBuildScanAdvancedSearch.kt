@@ -1,4 +1,4 @@
-package io.github.cdsap.geapi.client.repository.impl.query
+package io.github.cdsap.geapi.client.repository.impl
 
 import io.github.cdsap.geapi.client.model.Filter
 
