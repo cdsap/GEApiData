@@ -58,13 +58,14 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         buildId: String?,
     ): Array<Scan> {
         return client.get(
-            "${client.url}?${buildBuildScansUrlParameters(filter, buildId)}&query=$query",
+            "${client.url}?${buildBuildScansUrlParameters(filter, buildId, query)}",
         )
     }
 
     private fun buildBuildScansUrlParameters(
         filter: Filter,
         buildId: String?,
+        query: String? = null,
     ): String {
         val maxBuilds =
             if (filter.maxBuilds < 1000) {
@@ -77,6 +78,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
                 buildId?.let { "fromBuild=$it" },
                 "maxBuilds=$maxBuilds",
                 "reverse=true",
+                query?.let { "query=$it" },
             )
         return parameters.joinToString("&")
     }
