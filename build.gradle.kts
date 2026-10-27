@@ -34,11 +34,6 @@ tasks.compileJava {
     options.release.set(17)
 }
 
-configure<JavaPluginExtension> {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 application {
     mainClass.set("MainKt")
 }
