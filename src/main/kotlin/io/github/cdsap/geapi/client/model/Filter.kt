@@ -20,4 +20,9 @@ data class Filter(
      * `GetBuildsFromQueryWithAttributesRequest`. Requires Gradle Enterprise 2023.3 or later.
      */
     val advancedQuery: String? = null,
+    /**
+     * Unix epoch millis for Develocity `fromInstant`. With `reverse=true` (the listing default),
+     * the API returns builds processed before this instant. Ignored when paginating with `fromBuild`.
+     */
+    val fromInstant: Long? = null,
 )
