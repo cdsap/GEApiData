@@ -75,7 +75,8 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
             }
         val parameters =
             listOfNotNull(
-                buildId?.let { "fromBuild=$it" },
+                buildId?.let { "fromBuild=$it" }
+                    ?: filter.fromInstant?.let { "fromInstant=$it" },
                 "maxBuilds=$maxBuilds",
                 "reverse=true",
                 query?.let { "query=$it" },

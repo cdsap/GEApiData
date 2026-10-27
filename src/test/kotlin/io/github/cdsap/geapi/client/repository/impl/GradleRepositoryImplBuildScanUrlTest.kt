@@ -53,6 +53,54 @@ class GradleRepositoryImplBuildScanUrlTest {
     }
 
     @Test
+    fun `getBuildScans includes fromInstant when there is no buildId`() {
+        val captured =
+            captureRequestedUrl { repository ->
+                repository.getBuildScans(
+                    Filter(maxBuilds = 50, fromInstant = 1766178689570),
+                )
+            }
+
+        assertEquals(
+            "https://ge.example/api/builds?fromInstant=1766178689570&maxBuilds=50&reverse=true",
+            captured,
+        )
+    }
+
+    @Test
+    fun `getBuildScansWithAdvancedQuery includes fromInstant before maxBuilds`() {
+        val captured =
+            captureRequestedUrl { repository ->
+                repository.getBuildScansWithAdvancedQuery(
+                    Filter(maxBuilds = 200, fromInstant = 1766178689570),
+                    query = "tag:\"cdsap-249_varianta_2.2.21\"",
+                )
+            }
+
+        assertEquals(
+            "https://ge.example/api/builds?fromInstant=1766178689570&maxBuilds=200&reverse=true&query=tag:\"cdsap-249_varianta_2.2.21\"",
+            captured,
+        )
+    }
+
+    @Test
+    fun `fromBuild pagination omits fromInstant`() {
+        val captured =
+            captureRequestedUrl { repository ->
+                repository.getBuildScansWithAdvancedQuery(
+                    Filter(maxBuilds = 200, fromInstant = 1766178689570),
+                    query = "tag:\"cdsap-249_varianta_2.2.21\"",
+                    buildId = "prev-build",
+                )
+            }
+
+        assertEquals(
+            "https://ge.example/api/builds?fromBuild=prev-build&maxBuilds=200&reverse=true&query=tag:\"cdsap-249_varianta_2.2.21\"",
+            captured,
+        )
+    }
+
+    @Test
     fun `getBuildScansWithAdvancedQuery appends query after reverse`() {
         val captured =
             captureRequestedUrl { repository ->

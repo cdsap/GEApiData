@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.cdsap"
-version = "0.3.3"
+version = "0.3.4"
 
 repositories {
     mavenCentral()
@@ -46,7 +46,7 @@ application {
 mavenPublishing {
     publishToMavenCentral()
     signAllPublications()
-    coordinates("io.github.cdsap", "geapi-data", "0.3.3")
+    coordinates("io.github.cdsap", "geapi-data", "0.3.4")
 
     pom {
         scm {
