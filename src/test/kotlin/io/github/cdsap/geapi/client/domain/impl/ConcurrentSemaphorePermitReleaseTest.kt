@@ -51,7 +51,6 @@ class ConcurrentSemaphorePermitReleaseTest {
         val requestSources =
             listOf(
                 "GetBuildsWithArtifactTransformRequest.kt",
-                "GetBuildsWithCachePerformanceRequest.kt",
                 "GetBuildsResourceUsageRequest.kt",
                 "GetScanAttribute.kt",
                 "BuildScanBatchProcessor.kt",
@@ -90,6 +89,7 @@ class ConcurrentSemaphorePermitReleaseTest {
             listOf(
                 "GetBuildsProfileRequest.kt",
                 "GetConfigurationCacheResultRequest.kt",
+                "GetBuildsWithCachePerformanceRequest.kt",
             )
 
         convertedSources.forEach { fileName ->
