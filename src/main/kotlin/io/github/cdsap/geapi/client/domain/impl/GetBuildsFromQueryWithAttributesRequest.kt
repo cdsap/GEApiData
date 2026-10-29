@@ -6,12 +6,12 @@ import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.BuildScanRepository
 import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class GetBuildsFromQueryWithAttributesRequest(private val repository: GradleEnterpriseRepository) :
+class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanRepository) :
     GetBuildsWithAttributes {
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
