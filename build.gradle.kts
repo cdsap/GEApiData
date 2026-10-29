@@ -17,13 +17,13 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-client-core:3.6.0")
-    implementation("io.ktor:ktor-client-cio:3.6.0")
-    implementation("io.ktor:ktor-client-auth:3.6.0")
-    implementation("io.ktor:ktor-client-content-negotiation:3.6.0")
-    implementation("io.ktor:ktor-serialization-gson:3.6.0")
+    implementation("io.ktor:ktor-client-core:3.6.1")
+    implementation("io.ktor:ktor-client-cio:3.6.1")
+    implementation("io.ktor:ktor-client-auth:3.6.1")
+    implementation("io.ktor:ktor-client-content-negotiation:3.6.1")
+    implementation("io.ktor:ktor-serialization-gson:3.6.1")
     testImplementation(kotlin("test"))
-    testImplementation("io.ktor:ktor-client-mock:3.6.0")
+    testImplementation("io.ktor:ktor-client-mock:3.6.1")
 }
 
 tasks.test {
