@@ -7,11 +7,11 @@ import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.BuildScanRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class GetBuildsWithAttributesRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithAttributes {
+class GetBuildsWithAttributesRequest(private val repository: BuildScanRepository) : GetBuildsWithAttributes {
     override suspend fun get(filter: Filter): List<ScanWithAttributes> {
         val logger = Logger(filter.clientType)
         val buildScans = aggregateBuildScansToRetrieve(filter, logger)
