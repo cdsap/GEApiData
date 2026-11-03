@@ -9,9 +9,28 @@ import io.github.cdsap.geapi.client.model.PerformanceMetrics
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class GetUsageResourcesTest {
+    @Test
+    fun delegatesBatchExecutionAndProgressToSharedProcessor() {
+        val requestSource =
+            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/GetBuildsResourceUsageRequest.kt")
+                .readText()
+        val helperSource =
+            File("src/main/kotlin/io/github/cdsap/geapi/client/domain/impl/BuildScanBatchProcessor.kt")
+                .readText()
+
+        assertTrue(requestSource.contains("BuildScanBatchProcessor"))
+        assertFalse(requestSource.contains("BoundedRequestExecutor"))
+        assertFalse(requestSource.contains("ProgressFeedback("))
+        assertTrue(helperSource.contains("BoundedRequestExecutor"))
+        assertTrue(requestSource.contains("predicate = { it.buildTool == \"gradle\" }"))
+    }
+
     @Test
     fun givenGradleBuildItReturnsProcessUsage() =
         runBlocking {
