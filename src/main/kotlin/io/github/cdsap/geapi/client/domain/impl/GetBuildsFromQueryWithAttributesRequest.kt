@@ -1,6 +1,7 @@
 package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.domain.GetBuildsWithAttributes
+import io.github.cdsap.geapi.client.domain.impl.logger.BuildScanInformationLogger
 import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
@@ -8,8 +9,6 @@ import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.BuildScanRepository
 import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanRepository) :
     GetBuildsWithAttributes {
@@ -69,24 +68,8 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanR
             }
             previousBuildScansSize = buildScans.size
         }
-        logBuildScanInformation(buildScans, logger)
+        BuildScanInformationLogger.log(buildScans, logger)
 
         return buildScans
-    }
-
-    private fun logBuildScanInformation(
-        buildScans: List<Scan>,
-        logger: Logger,
-    ) {
-        if (buildScans.isNotEmpty()) {
-            val dateInit = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.first().availableAt))
-            logger.log("")
-            logger.log("Date first Build scan processed: $dateInit")
-            val dateEnd = SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(Date(buildScans.last().availableAt))
-            logger.log("Date last Build scan processed: $dateEnd")
-        } else {
-            logger.log("")
-            logger.log("No build scans found")
-        }
     }
 }
