@@ -9,19 +9,18 @@ import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class BuildScanInformationLoggerTest {
+class LoggerTest {
     @Test
     fun logsFirstAndLastScanDatesWithTheExistingFormat() {
         val firstAvailableAt = 0L
         val lastAvailableAt = 1_000L
 
         val output = captureOutput {
-            BuildScanInformationLogger.log(
+            Logger(ClientType.CLI).logBuildScanInformation(
                 listOf(
                     Scan("first", "gradle", firstAvailableAt),
                     Scan("last", "gradle", lastAvailableAt),
                 ),
-                Logger(ClientType.CLI),
             )
         }
 
@@ -36,10 +35,21 @@ class BuildScanInformationLoggerTest {
     @Test
     fun logsWhenNoBuildScansAreFound() {
         val output = captureOutput {
-            BuildScanInformationLogger.log(emptyList(), Logger(ClientType.CLI))
+            Logger(ClientType.CLI).logBuildScanInformation(emptyList())
         }
 
         assertEquals("\nNo build scans found\n", output)
+    }
+
+    @Test
+    fun remainsSilentForNonCliClients() {
+        val output = captureOutput {
+            Logger(ClientType.API).logBuildScanInformation(
+                listOf(Scan("scan", "gradle", 0L)),
+            )
+        }
+
+        assertEquals("", output)
     }
 
     private fun captureOutput(block: () -> Unit): String {
