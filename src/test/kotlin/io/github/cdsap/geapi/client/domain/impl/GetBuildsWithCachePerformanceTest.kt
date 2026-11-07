@@ -8,6 +8,7 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Goal
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.model.Task
+import io.github.cdsap.geapi.client.repository.BuildCachePerformanceRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -109,7 +110,7 @@ class GetCachePerformanceImplTest {
         }
 }
 
-internal class FakeCacheGradleEnterpriseRepository : FakeTestRepository() {
+internal class FakeCacheGradleEnterpriseRepository : BuildCachePerformanceRepository {
     override suspend fun getBuildScanGradleCachePerformance(id: String): Build {
         return Build(
             taskExecution =
