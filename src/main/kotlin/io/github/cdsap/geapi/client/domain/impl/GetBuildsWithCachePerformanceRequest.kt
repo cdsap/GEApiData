@@ -6,11 +6,13 @@ import io.github.cdsap.geapi.client.domain.impl.mapper.ScanMapper
 import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
-import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
+import io.github.cdsap.geapi.client.repository.BuildCachePerformanceRepository
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class GetBuildsWithCachePerformanceRequest(private val repository: GradleEnterpriseRepository) : GetBuildsWithCachePerformance {
+class GetBuildsWithCachePerformanceRequest(
+    private val repository: BuildCachePerformanceRepository,
+) : GetBuildsWithCachePerformance {
     override suspend fun get(
         builds: List<ScanWithAttributes>,
         filter: Filter,
