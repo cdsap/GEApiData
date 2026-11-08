@@ -1,6 +1,7 @@
 package io.github.cdsap.geapi.client.domain.impl
 
 import io.github.cdsap.geapi.client.domain.GetBuildsWithAttributes
+import io.github.cdsap.geapi.client.domain.impl.logger.BuildScanSummaryLogger
 import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
@@ -67,7 +68,7 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanR
             }
             previousBuildScansSize = buildScans.size
         }
-        logger.logBuildScanInformation(buildScans)
+        BuildScanSummaryLogger.log(buildScans, logger)
 
         return buildScans
     }
