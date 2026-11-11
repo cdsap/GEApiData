@@ -5,14 +5,73 @@ import io.github.cdsap.geapi.client.model.Build
 import io.github.cdsap.geapi.client.model.BuildWithResourceUsage
 import io.github.cdsap.geapi.client.model.CustomValue
 import io.github.cdsap.geapi.client.model.Environment
+import io.github.cdsap.geapi.client.model.GradleScan
+import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Metric
 import io.github.cdsap.geapi.client.model.PerformanceMetrics
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 
 class ScanMapperTest {
+    private val environment = Environment(username = "user", numberOfCpuCores = "4")
+    private val gradleScan =
+        GradleScan(
+            id = "gradle-id", rootProjectName = "gradle-project", requestedTasks = arrayOf("test"),
+            tags = arrayOf("gradle-tag"), hasFailed = true, environment = environment,
+            buildDuration = 123, buildStartTime = 456, values = arrayOf(CustomValue("g", "1")),
+        )
+    private val mavenScan =
+        MavenScan(
+            id = "maven-id", topLevelProjectName = "maven-project", requestedGoals = arrayOf("verify"),
+            tags = arrayOf("maven-tag"), hasFailed = false, environment = environment,
+            buildDuration = 789, buildStartTime = 101, values = arrayOf(CustomValue("m", "2")),
+        )
+
+    @Test
+    fun mapsTypedGradleScan() {
+        val result = ScanMapper().scanWithAttributes(gradleScan)
+
+        assertEquals("gradle", result.buildTool)
+        assertEquals("gradle-id", result.id)
+        assertEquals("gradle-project", result.projectName)
+        assertArrayEquals(arrayOf("test"), result.requestedTasksGoals)
+        assertArrayEquals(arrayOf("gradle-tag"), result.tags)
+        assertEquals(true, result.hasFailed)
+        assertEquals(environment, result.environment)
+        assertEquals(123L, result.buildDuration)
+        assertEquals(456L, result.buildStartTime)
+        assertArrayEquals(gradleScan.values, result.values)
+    }
+
+    @Test
+    fun mapsTypedMavenScan() {
+        val result = ScanMapper().scanWithAttributes(mavenScan)
+
+        assertEquals("maven", result.buildTool)
+        assertEquals("maven-id", result.id)
+        assertEquals("maven-project", result.projectName)
+        assertArrayEquals(arrayOf("verify"), result.requestedTasksGoals)
+        assertArrayEquals(arrayOf("maven-tag"), result.tags)
+        assertEquals(false, result.hasFailed)
+        assertEquals(environment, result.environment)
+        assertEquals(789L, result.buildDuration)
+        assertEquals(101L, result.buildStartTime)
+        assertArrayEquals(mavenScan.values, result.values)
+    }
+
+    @Test
+    fun nullablePairRetainsCompatibility() {
+        val mapper = ScanMapper()
+
+        assertEquals(mapper.scanWithAttributes(gradleScan), mapper.scanWithAttributes(gradleScan, null))
+        assertEquals(mapper.scanWithAttributes(mavenScan), mapper.scanWithAttributes(null, mavenScan))
+        assertEquals(mapper.scanWithAttributes(gradleScan), mapper.scanWithAttributes(gradleScan, mavenScan))
+        assertThrows(NullPointerException::class.java) { mapper.scanWithAttributes(null, null) }
+    }
+
     @Test
     fun enrichBuildWithScanMetadataCopiesScanAttributesOntoBuild() {
         val build =

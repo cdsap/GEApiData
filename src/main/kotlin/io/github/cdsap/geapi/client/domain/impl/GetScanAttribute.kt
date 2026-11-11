@@ -5,8 +5,6 @@ import io.github.cdsap.geapi.client.domain.impl.logger.Logger
 import io.github.cdsap.geapi.client.domain.impl.mapper.ScanMapper
 import io.github.cdsap.geapi.client.domain.impl.progress.ProgressFeedback
 import io.github.cdsap.geapi.client.model.Filter
-import io.github.cdsap.geapi.client.model.GradleScan
-import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.BuildScanAttributesRepository
@@ -45,15 +43,11 @@ class GetScanAttribute(private val repository: BuildScanAttributesRepository) {
         sc: Scan,
         scanMapper: ScanMapper,
     ): ScanWithAttributes {
-        var gradleScan: GradleScan? = null
-        var mavenScan: MavenScan? = null
-
-        if (sc.buildToolType == "gradle") {
-            gradleScan = repository.getBuildScanGradleAttribute(sc.id)
+        return if (sc.buildToolType == "gradle") {
+            scanMapper.scanWithAttributes(repository.getBuildScanGradleAttribute(sc.id))
         } else {
-            mavenScan = repository.getBuildScanMavenAttribute(sc.id)
+            scanMapper.scanWithAttributes(repository.getBuildScanMavenAttribute(sc.id))
         }
-        return scanMapper.scanWithAttributes(gradleScan, mavenScan)
     }
 
     private fun logBuildScanAttributesInformation(
