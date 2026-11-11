@@ -12,33 +12,39 @@ class ScanMapper {
         mavenScan: MavenScan?,
     ): ScanWithAttributes {
         return if (gradleScan != null) {
-            ScanWithAttributes(
-                buildTool = "gradle",
-                id = gradleScan.id,
-                projectName = gradleScan.rootProjectName ?: "",
-                requestedTasksGoals = gradleScan.requestedTasks,
-                tags = gradleScan.tags,
-                hasFailed = gradleScan.hasFailed,
-                environment = gradleScan.environment,
-                buildDuration = gradleScan.buildDuration,
-                buildStartTime = gradleScan.buildStartTime,
-                values = gradleScan.values,
-            )
+            scanWithAttributes(gradleScan)
         } else {
-            ScanWithAttributes(
-                buildTool = "maven",
-                id = mavenScan!!.id,
-                projectName = mavenScan.topLevelProjectName ?: "",
-                requestedTasksGoals = mavenScan.requestedGoals,
-                tags = mavenScan.tags,
-                hasFailed = mavenScan.hasFailed,
-                environment = mavenScan.environment,
-                buildDuration = mavenScan.buildDuration,
-                buildStartTime = mavenScan.buildStartTime,
-                values = mavenScan.values,
-            )
+            scanWithAttributes(mavenScan!!)
         }
     }
+
+    fun scanWithAttributes(gradleScan: GradleScan): ScanWithAttributes =
+        ScanWithAttributes(
+            buildTool = "gradle",
+            id = gradleScan.id,
+            projectName = gradleScan.rootProjectName ?: "",
+            requestedTasksGoals = gradleScan.requestedTasks,
+            tags = gradleScan.tags,
+            hasFailed = gradleScan.hasFailed,
+            environment = gradleScan.environment,
+            buildDuration = gradleScan.buildDuration,
+            buildStartTime = gradleScan.buildStartTime,
+            values = gradleScan.values,
+        )
+
+    fun scanWithAttributes(mavenScan: MavenScan): ScanWithAttributes =
+        ScanWithAttributes(
+            buildTool = "maven",
+            id = mavenScan.id,
+            projectName = mavenScan.topLevelProjectName ?: "",
+            requestedTasksGoals = mavenScan.requestedGoals,
+            tags = mavenScan.tags,
+            hasFailed = mavenScan.hasFailed,
+            environment = mavenScan.environment,
+            buildDuration = mavenScan.buildDuration,
+            buildStartTime = mavenScan.buildStartTime,
+            values = mavenScan.values,
+        )
 
     fun enrichBuildWithScanMetadata(
         build: Build,
