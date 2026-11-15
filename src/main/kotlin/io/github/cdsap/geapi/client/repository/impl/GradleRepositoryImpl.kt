@@ -13,11 +13,13 @@ import io.github.cdsap.geapi.client.network.GEClient
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 
 class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepository {
+    private val buildScanQueryParameters = BuildScanQueryParameters()
+
     override suspend fun getBuildScans(
         filter: Filter,
         buildId: String?,
     ): Array<Scan> {
-        return client.get("${client.url}?${buildBuildScansUrlParameters(filter, buildId)}")
+        return client.get("${client.url}?${buildScanQueryParameters.build(filter, buildId)}")
     }
 
     override suspend fun getBuildScanGradleAttribute(id: String): GradleScan {
@@ -58,29 +60,7 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
         buildId: String?,
     ): Array<Scan> {
         return client.get(
-            "${client.url}?${buildBuildScansUrlParameters(filter, buildId, query)}",
+            "${client.url}?${buildScanQueryParameters.build(filter, buildId, query)}",
         )
-    }
-
-    private fun buildBuildScansUrlParameters(
-        filter: Filter,
-        buildId: String?,
-        query: String? = null,
-    ): String {
-        val maxBuilds =
-            if (filter.maxBuilds < 1000) {
-                filter.maxBuilds
-            } else {
-                1000
-            }
-        val parameters =
-            listOfNotNull(
-                buildId?.let { "fromBuild=$it" }
-                    ?: filter.fromInstant?.let { "fromInstant=$it" },
-                "maxBuilds=$maxBuilds",
-                "reverse=true",
-                query?.let { "query=$it" },
-            )
-        return parameters.joinToString("&")
     }
 }
