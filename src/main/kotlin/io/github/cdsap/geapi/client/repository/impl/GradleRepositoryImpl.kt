@@ -14,6 +14,7 @@ import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
 
 class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepository {
     private val buildScanQueryParameters = BuildScanQueryParameters()
+    private val advancedSearch = FilterBuildScanAdvancedSearch()
 
     override suspend fun getBuildScans(
         filter: Filter,
@@ -56,9 +57,9 @@ class GradleRepositoryImpl(private val client: GEClient) : GradleEnterpriseRepos
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
-        query: String,
         buildId: String?,
     ): Array<Scan> {
+        val query = advancedSearch.filter(filter)
         return client.get(
             "${client.url}?${buildScanQueryParameters.build(filter, buildId, query)}",
         )
