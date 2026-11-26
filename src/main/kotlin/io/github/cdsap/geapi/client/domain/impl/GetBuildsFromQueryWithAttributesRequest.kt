@@ -8,7 +8,6 @@ import io.github.cdsap.geapi.client.model.Filter
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.model.ScanWithAttributes
 import io.github.cdsap.geapi.client.repository.BuildScanRepository
-import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
 
 class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanRepository) :
     GetBuildsWithAttributes {
@@ -35,18 +34,16 @@ class GetBuildsFromQueryWithAttributesRequest(private val repository: BuildScanR
 
         var continueCalls = true
         var previousBuildScansSize = 0
-        val query = FilterBuildScanAdvancedSearch().filter(filter)
-
         while (buildScans.size < filter.maxBuilds && continueCalls) {
             val scans =
                 if (buildScans.size == 0) {
                     if (filter.sinceBuildId != null) {
-                        repository.getBuildScansWithAdvancedQuery(filter, query, filter.sinceBuildId)
+                        repository.getBuildScansWithAdvancedQuery(filter, filter.sinceBuildId)
                     } else {
-                        repository.getBuildScansWithAdvancedQuery(filter, query)
+                        repository.getBuildScansWithAdvancedQuery(filter)
                     }
                 } else {
-                    repository.getBuildScansWithAdvancedQuery(filter, query, buildScans.last().id)
+                    repository.getBuildScansWithAdvancedQuery(filter, buildScans.last().id)
                 }
 
             if (buildScans.size + scans.size > filter.maxBuilds) {

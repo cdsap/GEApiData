@@ -18,14 +18,20 @@ class GradleRepositoryImplBuildScanUrlTest {
         val captured =
             captureRequestedUrl { repository ->
                 repository.getBuildScansWithAdvancedQuery(
-                    Filter(maxBuilds = 1500),
-                    query = "tag:\"ci\"",
+                    Filter(
+                        maxBuilds = 1500,
+                        project = "my-project",
+                        tags = listOf("ci", "main"),
+                        advancedQuery = "gradle.buildCache.hasError:true AND buildOutcome:failed",
+                    ),
                     buildId = "prev-build",
                 )
             }
 
         assertEquals(
-            "https://ge.example/api/builds?fromBuild=prev-build&maxBuilds=1000&reverse=true&query=tag:\"ci\"",
+            "https://ge.example/api/builds?fromBuild=prev-build&maxBuilds=1000&reverse=true" +
+                "&query=project:my-project%20(tag:\"ci\"%20OR%20tag:\"main\")" +
+                "%20gradle.buildCache.hasError:true%20AND%20buildOutcome:failed",
             captured,
         )
     }

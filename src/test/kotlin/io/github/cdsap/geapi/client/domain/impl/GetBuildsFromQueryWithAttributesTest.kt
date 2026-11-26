@@ -11,11 +11,9 @@ import io.github.cdsap.geapi.client.model.GradleScan
 import io.github.cdsap.geapi.client.model.MavenScan
 import io.github.cdsap.geapi.client.model.Scan
 import io.github.cdsap.geapi.client.repository.GradleEnterpriseRepository
-import io.github.cdsap.geapi.client.repository.impl.FilterBuildScanAdvancedSearch
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertTrue
 
 class GetBuildsFromQueryWithAttributesTest {
     @Test
@@ -115,7 +113,7 @@ class GetBuildsFromQueryWithAttributesTest {
         }
 
     @Test
-    fun advancedQueryIsBuiltOnceAndPassedToRepository() =
+    fun filterIsPassedToRepository() =
         runBlocking {
             val capturingRepository = QueryCapturingRepository()
             val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
@@ -133,13 +131,11 @@ class GetBuildsFromQueryWithAttributesTest {
 
             request.get(filter)
 
-            val expectedQuery = FilterBuildScanAdvancedSearch().filter(filter)
-            assertEquals(1, capturingRepository.queries.size)
-            assertEquals(expectedQuery, capturingRepository.queries.single())
+            assertEquals(listOf(filter), capturingRepository.filters)
         }
 
     @Test
-    fun advancedQueryIsReusedAcrossPaginatedCalls() =
+    fun filterAndBuildIdArePassedAcrossPaginatedCalls() =
         runBlocking {
             val capturingRepository = PaginatingQueryCapturingRepository()
             val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
@@ -157,43 +153,19 @@ class GetBuildsFromQueryWithAttributesTest {
 
             request.get(filter)
 
-            val expectedQuery = FilterBuildScanAdvancedSearch().filter(filter)
-            assertEquals(2, capturingRepository.queries.size)
-            assertTrue(capturingRepository.queries.all { it == expectedQuery })
-        }
-
-    @Test
-    fun advancedQueryFromFilterIsPassedToRepository() =
-        runBlocking {
-            val capturingRepository = QueryCapturingRepository()
-            val request = GetBuildsFromQueryWithAttributesRequest(capturingRepository)
-
-            val filter =
-                Filter(
-                    maxBuilds = 100,
-                    concurrentCalls = 1,
-                    project = "nowinandroid",
-                    advancedQuery = "gradle.buildCache.hasError:true",
-                )
-
-            request.get(filter)
-
-            assertEquals(
-                "project:nowinandroid%20gradle.buildCache.hasError:true",
-                capturingRepository.queries.single(),
-            )
+            assertEquals(listOf(filter, filter), capturingRepository.filters)
+            assertEquals(listOf(null, "1000"), capturingRepository.buildIds)
         }
 }
 
 internal class QueryCapturingRepository : FakeTestRepository() {
-    val queries = mutableListOf<String>()
+    val filters = mutableListOf<Filter>()
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
-        query: String,
         buildId: String?,
     ): Array<Scan> {
-        queries.add(query)
+        filters.add(filter)
         return Array(filter.maxBuilds.coerceAtMost(1000)) { i ->
             Scan(id = (i + 1).toString(), buildToolType = "gradle")
         }
@@ -229,14 +201,15 @@ internal class QueryCapturingRepository : FakeTestRepository() {
 }
 
 internal class PaginatingQueryCapturingRepository : FakeTestRepository() {
-    val queries = mutableListOf<String>()
+    val filters = mutableListOf<Filter>()
+    val buildIds = mutableListOf<String?>()
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
-        query: String,
         buildId: String?,
     ): Array<Scan> {
-        queries.add(query)
+        filters.add(filter)
+        buildIds.add(buildId)
         val startId = buildId?.toIntOrNull()?.plus(1) ?: 1
         val pageSize = if (buildId == null) 1000 else filter.maxBuilds - 1000
         return Array(pageSize) { i ->
@@ -284,7 +257,6 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
 
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
-        query: String,
         buildId: String?,
     ): Array<Scan> {
         val scans = mutableListOf<Scan>()
@@ -367,7 +339,6 @@ internal class FakeGradleEnterpriseRepositoryWithQuery(private val buildSystems:
 internal class FakeEmptyRepositoryWithQuery : FakeTestRepository() {
     override suspend fun getBuildScansWithAdvancedQuery(
         filter: Filter,
-        query: String,
         buildId: String?,
     ): Array<Scan> {
         return emptyArray<Scan>()
